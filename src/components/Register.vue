@@ -5,11 +5,31 @@
     lazy-validation
   >
     <v-text-field
-      v-model="name"
-      :counter="10"
-      :rules="nameRules"
-      label="Name"
+      v-model="username"
+      :counter="usernameMaxLength"
+      :rules="usernameRules"
+      label="Username"
       required
+    ></v-text-field>
+
+    <v-text-field
+      v-model="password"
+      :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+      :type="passwordShow ? 'text' : 'password'"
+      :rules="passwordRules"
+      label="Password"
+      required
+      @click:append="passwordShow = !passwordShow"
+    ></v-text-field>
+
+    <v-text-field
+      v-model="passwordConfirm"
+      :append-icon="passwordConfirmShow ? 'visibility' : 'visibility_off'"
+      :type="passwordConfirmShow ? 'text' : 'password'"
+      :rules="passwordConfirmRules"
+      label="Password"
+      required
+      @click:append="passwordConfirmShow = !passwordConfirmShow"
     ></v-text-field>
 
     <v-text-field
@@ -18,21 +38,6 @@
       label="E-mail"
       required
     ></v-text-field>
-
-    <v-select
-      v-model="select"
-      :items="items"
-      :rules="[v => !!v || 'Item is required']"
-      label="Item"
-      required
-    ></v-select>
-
-    <v-checkbox
-      v-model="checkbox"
-      :rules="[v => !!v || 'You must agree to continue!']"
-      label="Do you agree?"
-      required
-    ></v-checkbox>
 
     <v-btn
       :disabled="!valid"
@@ -62,30 +67,38 @@
 export default {
   data: () => ({
     valid: true,
-    name: '',
-    nameRules: [
-      v => !!v || 'Name is required',
-      v => (v && v.length <= 10) || 'Name must be less than 10 characters'
+    username: '',
+    usernameMaxLength: 50,
+    usernameRules: [
+      v => !!v || 'Username is required',
+      v => (v && v.length <= 50) || 'Username must be shorter than 50 characters',
+      v => (v && v.length >= 3) || 'Username must be longer than 3 characters'
+    ],
+    password: '',
+    passwordShow: false,
+    passwordConfirm: '',
+    passwordConfirmShow: false,
+    passwordRules: [
+      v => !!v || 'Password is required'
+    ],
+    passwordConfirmRules: [
+      v => !!v || 'You must confirm your password'
     ],
     email: '',
     emailRules: [
       v => !!v || 'E-mail is required',
-      v => /.+@.+/.test(v) || 'E-mail must be valid'
-    ],
-    select: null,
-    items: [
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4'
-    ],
-    checkbox: false
+      v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+    ]
   }),
 
   methods: {
     validate () {
       if (this.$refs.form.validate()) {
-        this.snackbar = true
+        let data = this.$data
+
+        if (data.password === data.passwordConfirm) {
+          console.log('Call API for login')
+        }
       }
     },
     reset () {
