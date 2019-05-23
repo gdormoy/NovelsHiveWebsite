@@ -64,6 +64,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data: () => ({
     valid: true,
@@ -98,6 +100,17 @@ export default {
 
         if (data.password === data.passwordConfirm) {
           console.log('Call API for login')
+
+          let currentObject = this
+
+          axios.post('http://localhost:3000/api/users', {
+            'email': data.email,
+            'username': data.username,
+            'password': data.password
+          }).then(function (response) {
+            // Redirect to validation page
+            currentObject.router.push('/')
+          })
         }
       }
     },
