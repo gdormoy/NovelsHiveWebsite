@@ -4,6 +4,15 @@
     v-model="valid"
     lazy-validation
   >
+    <v-alert
+      :value="serverError"
+      type="error"
+      dismissible
+      style="width: 80%"
+    >
+      An error has occurred while creating your account. Try again later.
+    </v-alert>
+
     <v-text-field
       v-model="username"
       :counter="usernameMaxLength"
@@ -67,6 +76,7 @@ import axios from 'axios'
 
 export default {
   data: () => ({
+    serverError: false,
     valid: true,
     username: '',
     usernameMaxLength: 50,
@@ -142,7 +152,11 @@ export default {
                       break
                   }
                 }
+              } else {
+                this.$data.serverError = true
               }
+            } else {
+              this.$data.serverError = true
             }
           })
         }
