@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
   data: () => ({
@@ -130,7 +130,7 @@ export default {
           this.$data.usernameSaved = this.$data.username
           this.$data.emailSaved = this.$data.email
 
-          axios.post(process.env.API_LOCATION + '/users', {
+          this.$http.post(process.env.API_LOCATION + '/users', {
             'email': data.email,
             'username': data.username,
             'password': data.password

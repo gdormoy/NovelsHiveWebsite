@@ -6,14 +6,17 @@ import router from './router'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import VueRouter from 'vue-router'
+import VueAxios from 'vue-axios'
+import axios from 'axios'
 
 Vue.config.productionTip = false
-Vue.use(Vuetify, VueRouter)
+Vue.use(Vuetify, VueRouter, VueAxios, axios)
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  axios,
   components: { App },
   template: '<App/>'
 })
