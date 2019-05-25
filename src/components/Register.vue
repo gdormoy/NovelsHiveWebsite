@@ -9,6 +9,9 @@
       :counter="usernameMaxLength"
       :rules="usernameRules"
       label="Username"
+      :error="usernameError"
+      :error-messages="usernameErrorMessages"
+      @input="usernameExists"
       required
     ></v-text-field>
 
@@ -24,18 +27,21 @@
 
     <v-text-field
       v-model="passwordConfirm"
-      :append-icon="passwordConfirmShow ? 'visibility' : 'visibility_off'"
-      :type="passwordConfirmShow ? 'text' : 'password'"
+      :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+      :type="passwordShow ? 'text' : 'password'"
       :rules="passwordConfirmRules"
       label="Password"
       required
-      @click:append="passwordConfirmShow = !passwordConfirmShow"
+      @click:append="passwordShow = !passwordShow"
     ></v-text-field>
 
     <v-text-field
       v-model="email"
       :rules="emailRules"
       label="E-mail"
+      :error="emailError"
+      :error-messages="emailErrorMessages"
+      @input="emailExists"
       required
     ></v-text-field>
 
@@ -53,13 +59,6 @@
     >
       Reset Form
     </v-btn>
-
-    <v-btn
-      color="warning"
-      @click="resetValidation"
-    >
-      Reset Validation
-    </v-btn>
   </v-form>
 </template>
 
@@ -76,10 +75,12 @@ export default {
       v => (v && v.length <= 50) || 'Username must be shorter than 50 characters',
       v => (v && v.length >= 3) || 'Username must be longer than 3 characters'
     ],
+    usernameError: false,
+    usernameErrorMessages: '',
+    usernameSaved: '',
     password: '',
     passwordShow: false,
     passwordConfirm: '',
-    passwordConfirmShow: false,
     passwordRules: [
       v => !!v || 'Password is required'
     ],
@@ -89,11 +90,26 @@ export default {
     email: '',
     emailRules: [
       v => !!v || 'E-mail is required',
-      v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
-    ]
+      v => /.+@.+\..+/.test(v) || 'Email must be valid'
+    ],
+    emailError: false,
+    emailErrorMessages: '',
+    emailSaved: ''
   }),
 
   methods: {
+    usernameExists () {
+      if (this.$data.username !== this.$data.usernameSaved) {
+        this.$data.usernameError = false
+        this.$data.usernameErrorMessages = ''
+      }
+    },
+    emailExists () {
+      if (this.$data.email !== this.$data.emailSaved) {
+        this.$data.emailError = false
+        this.$data.emailErrorMessages = ''
+      }
+    },
     validate () {
       if (this.$refs.form.validate()) {
         let data = this.$data
@@ -101,24 +117,39 @@ export default {
         if (data.password === data.passwordConfirm) {
           console.log('Call API for login')
 
-          let currentObject = this
+          this.$data.usernameSaved = this.$data.username
+          this.$data.emailSaved = this.$data.email
 
-          axios.post('http://localhost:3000/api/users', {
+          axios.post(process.env.API_LOCATION + '/users', {
             'email': data.email,
             'username': data.username,
             'password': data.password
-          }).then(function (response) {
+          }).then(response => {
             // Redirect to validation page
-            currentObject.router.push('/')
+            this.$router.push('HelloWorld')
+          }).catch(error => {
+            if (error.response) {
+              if (error.response.status === 422) {
+                for (let message in error.response.data.error.details.messages) {
+                  switch (message) {
+                    case 'username':
+                      this.$data.usernameError = true
+                      this.$data.usernameErrorMessages = 'Username already exist'
+                      break
+                    case 'email':
+                      this.$data.emailError = true
+                      this.$data.emailErrorMessages = 'Username already exist'
+                      break
+                  }
+                }
+              }
+            }
           })
         }
       }
     },
     reset () {
       this.$refs.form.reset()
-    },
-    resetValidation () {
-      this.$refs.form.resetValidation()
     }
   }
 }
