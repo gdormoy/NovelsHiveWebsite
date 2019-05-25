@@ -85,6 +85,7 @@ export default {
     },
     loginFailed (error) {
       this.loginError = true
+      delete localStorage.accessToken
 
       if (!error.response) {
         this.loginErrorMessage = this.serverDoesNotRespondErrorMessage
