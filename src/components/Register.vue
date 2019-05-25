@@ -10,7 +10,7 @@
       dismissible
       style="width: 80%"
     >
-      An error has occurred while creating your account. Try again later.
+      {{serverDoesNotRespondErrorMessage}}
     </v-alert>
 
     <v-text-field
@@ -72,8 +72,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
-
 export default {
   data: () => ({
     serverError: false,
@@ -104,7 +102,8 @@ export default {
     ],
     emailError: false,
     emailErrorMessages: '',
-    emailSaved: ''
+    emailSaved: '',
+    serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE
   }),
 
   methods: {
@@ -136,7 +135,7 @@ export default {
             'password': data.password
           }).then(response => {
             // Redirect to validation page
-            this.$router.push('HelloWorld')
+            this.$router.push('/')
           }).catch(error => {
             if (error.response) {
               if (error.response.status === 422) {
