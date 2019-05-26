@@ -1,75 +1,81 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="valid"
-    lazy-validation
-  >
-    <v-alert
-      :value="serverError"
-      type="error"
-      dismissible
+  <div id="register">
+    <h1>Getting started</h1>
+
+    <v-form
+      ref="form"
+      v-model="valid"
+      lazy-validation
     >
-      {{serverDoesNotRespondErrorMessage}}
-    </v-alert>
+      <v-alert
+        :value="serverError"
+        type="error"
+        dismissible
+      >
+        {{serverDoesNotRespondErrorMessage}}
+      </v-alert>
 
-    <v-spacer />
+      <v-spacer />
 
-    <v-text-field
-      v-model="username"
-      :counter="usernameMaxLength"
-      :rules="usernameRules"
-      label="Username"
-      :error="usernameError"
-      :error-messages="usernameErrorMessages"
-      @input="usernameExists"
-      required
-    ></v-text-field>
+      <v-text-field
+        v-model="username"
+        :counter="usernameMaxLength"
+        :rules="usernameRules"
+        label="Username"
+        :error="usernameError"
+        :error-messages="usernameErrorMessages"
+        @input="usernameExists"
+        required
+      ></v-text-field>
 
-    <v-text-field
-      v-model="password"
-      :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
-      :type="passwordShow ? 'text' : 'password'"
-      :rules="passwordRules"
-      label="Password"
-      required
-      @click:append="passwordShow = !passwordShow"
-    ></v-text-field>
+      <v-text-field
+        v-model="password"
+        :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+        :type="passwordShow ? 'text' : 'password'"
+        :rules="passwordRules"
+        label="Password"
+        required
+        @click:append="passwordShow = !passwordShow"
+      ></v-text-field>
 
-    <v-text-field
-      v-model="passwordConfirm"
-      :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
-      :type="passwordShow ? 'text' : 'password'"
-      :rules="passwordConfirmRules"
-      label="Password"
-      required
-      @click:append="passwordShow = !passwordShow"
-    ></v-text-field>
+      <v-text-field
+        v-model="passwordConfirm"
+        :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+        :type="passwordShow ? 'text' : 'password'"
+        :rules="passwordConfirmRules"
+        label="Password"
+        required
+        @click:append="passwordShow = !passwordShow"
+      ></v-text-field>
 
-    <v-text-field
-      v-model="email"
-      :rules="emailRules"
-      label="E-mail"
-      :error="emailError"
-      :error-messages="emailErrorMessages"
-      @input="emailExists"
-      required
-    ></v-text-field>
+      <v-text-field
+        v-model="email"
+        :rules="emailRules"
+        label="E-mail"
+        :error="emailError"
+        :error-messages="emailErrorMessages"
+        @input="emailExists"
+        required
+      ></v-text-field>
 
-    <v-btn
-      :disabled="!valid"
-      color="success"
-      @click="validate"
-    >
-      Validate
-    </v-btn>
+      <p>Already have an account ? <router-link to="/login">Log in</router-link></p>
 
-    <v-btn
-      color="error"
-      @click="reset"
-    >
-      Reset Form
-    </v-btn>
-  </v-form>
+      <v-btn
+        :disabled="!valid"
+        color="success"
+        @click="validate"
+      >
+        Validate
+      </v-btn>
+
+      <v-btn
+        color="error"
+        @click="reset"
+      >
+        Reset Form
+      </v-btn>
+    </v-form>
+  </div>
 </template>
 
 <script>
