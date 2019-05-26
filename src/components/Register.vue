@@ -1,79 +1,84 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="valid"
-    lazy-validation
-  >
-    <v-alert
-      :value="serverError"
-      type="error"
-      dismissible
-      style="width: 80%"
+  <div id="register">
+    <h1>Getting started</h1>
+
+    <v-form
+      ref="form"
+      v-model="valid"
+      lazy-validation
     >
-      An error has occurred while creating your account. Try again later.
-    </v-alert>
+      <v-alert
+        :value="serverError"
+        type="error"
+        dismissible
+      >
+        {{serverDoesNotRespondErrorMessage}}
+      </v-alert>
 
-    <v-text-field
-      v-model="username"
-      :counter="usernameMaxLength"
-      :rules="usernameRules"
-      label="Username"
-      :error="usernameError"
-      :error-messages="usernameErrorMessages"
-      @input="usernameExists"
-      required
-    ></v-text-field>
+      <v-spacer />
 
-    <v-text-field
-      v-model="password"
-      :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
-      :type="passwordShow ? 'text' : 'password'"
-      :rules="passwordRules"
-      label="Password"
-      required
-      @click:append="passwordShow = !passwordShow"
-    ></v-text-field>
+      <v-text-field
+        v-model="username"
+        :counter="usernameMaxLength"
+        :rules="usernameRules"
+        label="Username"
+        :error="usernameError"
+        :error-messages="usernameErrorMessages"
+        @input="usernameExists"
+        required
+      ></v-text-field>
 
-    <v-text-field
-      v-model="passwordConfirm"
-      :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
-      :type="passwordShow ? 'text' : 'password'"
-      :rules="passwordConfirmRules"
-      label="Password"
-      required
-      @click:append="passwordShow = !passwordShow"
-    ></v-text-field>
+      <v-text-field
+        v-model="password"
+        :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+        :type="passwordShow ? 'text' : 'password'"
+        :rules="passwordRules"
+        label="Password"
+        required
+        @click:append="passwordShow = !passwordShow"
+      ></v-text-field>
 
-    <v-text-field
-      v-model="email"
-      :rules="emailRules"
-      label="E-mail"
-      :error="emailError"
-      :error-messages="emailErrorMessages"
-      @input="emailExists"
-      required
-    ></v-text-field>
+      <v-text-field
+        v-model="passwordConfirm"
+        :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+        :type="passwordShow ? 'text' : 'password'"
+        :rules="passwordConfirmRules"
+        label="Password"
+        required
+        @click:append="passwordShow = !passwordShow"
+      ></v-text-field>
 
-    <v-btn
-      :disabled="!valid"
-      color="success"
-      @click="validate"
-    >
-      Validate
-    </v-btn>
+      <v-text-field
+        v-model="email"
+        :rules="emailRules"
+        label="E-mail"
+        :error="emailError"
+        :error-messages="emailErrorMessages"
+        @input="emailExists"
+        required
+      ></v-text-field>
 
-    <v-btn
-      color="error"
-      @click="reset"
-    >
-      Reset Form
-    </v-btn>
-  </v-form>
+      <p>Already have an account ? <router-link to="/login">Log in</router-link></p>
+
+      <v-btn
+        :disabled="!valid"
+        color="success"
+        @click="validate"
+      >
+        Validate
+      </v-btn>
+
+      <v-btn
+        color="error"
+        @click="reset"
+      >
+        Reset Form
+      </v-btn>
+    </v-form>
+  </div>
 </template>
 
 <script>
-// import axios from 'axios'
-
 export default {
   data: () => ({
     serverError: false,
@@ -104,7 +109,8 @@ export default {
     ],
     emailError: false,
     emailErrorMessages: '',
-    emailSaved: ''
+    emailSaved: '',
+    serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE
   }),
 
   methods: {
@@ -136,7 +142,7 @@ export default {
             'password': data.password
           }).then(response => {
             // Redirect to validation page
-            this.$router.push('HelloWorld')
+            this.$router.push('/')
           }).catch(error => {
             if (error.response) {
               if (error.response.status === 422) {
@@ -167,7 +173,7 @@ export default {
     }
   }
 }
-</script>
+</script>>
 
 <style scoped>
 
