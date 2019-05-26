@@ -8,10 +8,11 @@
       :value="serverError"
       type="error"
       dismissible
-      style="width: 80%"
     >
       {{serverDoesNotRespondErrorMessage}}
     </v-alert>
+
+    <v-spacer />
 
     <v-text-field
       v-model="username"
@@ -166,7 +167,7 @@ export default {
     }
   }
 }
-</script>
+</script>>
 
 <style scoped>
 
