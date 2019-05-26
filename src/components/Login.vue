@@ -1,43 +1,49 @@
 <template>
-  <v-form
-    ref="form"
-    v-model="formIsValid"
-    lazy-validation
-  >
-    <v-alert
-      :value="loginError"
-      type="error"
-      dismissible
-      style="width: 80%"
+  <div id="login">
+
+    <h1>Sign in</h1>
+    <v-form
+      ref="form"
+      v-model="formIsValid"
+      lazy-validation
     >
-      {{loginErrorMessage}}
-    </v-alert>
+      <v-alert
+        :value="loginError"
+        type="error"
+        dismissible
+        style="width: 80%"
+      >
+        {{loginErrorMessage}}
+      </v-alert>
 
-    <v-text-field
-      v-model="username"
-      label="Username"
-      :rules="usernameRules"
-      required
-    ></v-text-field>
+      <v-text-field
+        v-model="username"
+        label="Username"
+        :rules="usernameRules"
+        required
+      ></v-text-field>
 
-    <v-text-field
-      v-model="password"
-      :rules="passwordRules"
-      :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
-      :type="passwordShow ? 'text' : 'password'"
-      label="Password"
-      required
-      @click:append="passwordShow = !passwordShow"
-    ></v-text-field>
+      <v-text-field
+        v-model="password"
+        :rules="passwordRules"
+        :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+        :type="passwordShow ? 'text' : 'password'"
+        label="Password"
+        required
+        @click:append="passwordShow = !passwordShow"
+      ></v-text-field>
 
-    <v-btn
-      :disabled="!formIsValid"
-      color="success"
-      @click="validate"
-    >
-      Log in
-    </v-btn>
-  </v-form>
+      <p>Don't have an account yet ? You can <router-link to="/register">register</router-link></p>
+
+      <v-btn
+        :disabled="!formIsValid"
+        color="success"
+        @click="validate"
+      >
+        Log in
+      </v-btn>
+    </v-form>
+  </div>
 </template>
 
 <script>
@@ -94,7 +100,7 @@ export default {
 
       if (error.response.status === 401) {
         this.loginErrorMessage = 'Username/password pair is unknown. Did you create an account first ?\n' +
-          'If you did, try to check your email box to find the validation email we sent you.'
+            'If you did, try to check your email box to find the validation email we sent you.'
       } else {
         this.loginErrorMessage = this.serverDoesNotRespondErrorMessage
       }
