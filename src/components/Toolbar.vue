@@ -6,7 +6,7 @@
     <v-toolbar-side-icon
       @click.stop="toggleDrawer"
     ></v-toolbar-side-icon>
-    <v-toolbar-title>Vuetify Drawer Example</v-toolbar-title>
+    <v-toolbar-title>Novel's Hive</v-toolbar-title>
   </v-toolbar>
 </template>
 
