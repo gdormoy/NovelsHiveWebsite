@@ -53,9 +53,6 @@ export default {
       return this.$store.state.drawer
     },
     userIsLogged () {
-      console.log('userIsLogged : ')
-      console.log(localStorage.accessToken)
-
       return !!localStorage.accessToken
     }
   },

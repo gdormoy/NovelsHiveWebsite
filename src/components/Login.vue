@@ -85,7 +85,6 @@ export default {
       }
 
       localStorage.accessToken = response.data.id
-      console.log('login is a success, accesstoken : ' + response.data.id)
       // Redirect
       this.$router.push('/')
     },
