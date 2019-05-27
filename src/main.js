@@ -12,9 +12,11 @@ import SimpleLineIcon from 'vue-simple-line'
 import NavigationDrawer from './components/NavigationDrawer'
 import Toolbar from './components/Toolbar'
 import store from './store'
+import CKEditor from '@ckeditor/ckeditor5-vue'
 
 Vue.config.productionTip = false
 Vue.use(Vuetify, VueRouter, VueAxios, axios)
+Vue.use(CKEditor)
 Vue.prototype.$http = axios
 
 // eslint-disable-next-line no-new
