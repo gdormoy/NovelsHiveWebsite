@@ -1,7 +1,7 @@
 <template>
   <div id="editor">
     <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
-    <p>{{editorData}}</p>
+    <div v-html="editorData"></div>
   </div>
 </template>
 
