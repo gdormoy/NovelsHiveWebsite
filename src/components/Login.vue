@@ -85,6 +85,7 @@ export default {
       }
 
       localStorage.accessToken = response.data.id
+      localStorage.userId = response.data.userId
       // Redirect
       this.$router.push('/')
     },
