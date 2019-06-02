@@ -1,18 +1,31 @@
-<template>
-  <div id="myStories">
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+  <div id="myStories" data-app>
     <h1>My stories</h1>
 
     <h2>Drafts</h2>
 
-    <ul>
-      <li v-for="story in stories" :key="story.id">
-        <ol>
-          <li v-for="chapter in story.storyChapters" :key="chapter.id">
-            {{chapter.title}}
-          </li>
-        </ol>
-      </li>
-    </ul>
+    <v-container fluid grid-list-md>
+      <v-data-iterator
+        :items="draftChapters"
+        :rows-per-page-items="rowsPerPageItems"
+        :pagination.sync="pagination"
+        content-tag="v-layout"
+        no-results-text="You don't have any draft yet."
+        row
+        wrap
+      >
+        <template v-slot:item="props">
+          <v-flex
+            xs12
+            sm6
+            md4
+            lg3
+          >
+            <chapter-icon :chapter="props.item.chapter"></chapter-icon>
+          </v-flex>
+        </template>
+      </v-data-iterator>
+    </v-container>
 
     <h2>Completed</h2>
 
@@ -20,11 +33,20 @@
 </template>
 
 <script>
+import ChapterIcon from './ChapterIcon'
+
 export default {
   name: 'MyStories',
+  components: {ChapterIcon},
   data () {
     return {
-      stories: []
+      stories: [],
+      draftChapters: [],
+      completedChapters: [],
+      rowsPerPageItems: [4],
+      pagination: {
+        rowsPerPage: 4
+      }
     }
   },
   mounted () {
@@ -34,8 +56,19 @@ export default {
       }
     })
       .then(response => {
-        console.log(response)
         this.$data.stories = response.data.chapters.stories
+
+        response.data.chapters.stories.forEach(function (story) {
+          let storyName = story.title
+
+          story.storyChapters.forEach(function (chapter) {
+            let chapterToInsert = {'storyName': storyName, chapter: chapter}
+
+            if (!chapter.online) {
+              this.draftChapters.push(chapterToInsert)
+            }
+          }, this)
+        }, this)
       })
   }
 }
