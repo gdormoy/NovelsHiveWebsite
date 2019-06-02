@@ -50,6 +50,7 @@ export default {
     }
   },
   mounted () {
+    this.$store.state.loader = true
     this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/chapters', {
       headers: {
         'Authorization': localStorage.accessToken
@@ -69,6 +70,9 @@ export default {
             }
           }, this)
         }, this)
+      })
+      .finally(() => {
+        this.$store.state.loader = false
       })
   }
 }
