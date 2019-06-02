@@ -1,6 +1,6 @@
 <template>
     <div>
-      <v-hover>
+      <v-hover class="ma-auto mt-3">
         <v-card
           slot-scope="{ hover }"
           max-width="150px"
