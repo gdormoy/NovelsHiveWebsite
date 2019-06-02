@@ -43,6 +43,7 @@ export default {
       stories: [],
       draftChapters: [],
       completedChapters: [],
+      tempCompletedChapters: [],
       rowsPerPageItems: [4],
       pagination: {
         rowsPerPage: 4
@@ -61,18 +62,24 @@ export default {
 
         response.data.chapters.stories.forEach(function (story) {
           let storyName = story.title
+          this.$data.tempCompletedChapters = {'storyName': storyName, chapters: []}
 
           story.storyChapters.forEach(function (chapter) {
-            let chapterToInsert = {'storyName': storyName, chapter: chapter}
-
-            if (!chapter.online) {
-              this.draftChapters.push(chapterToInsert)
+            if (chapter.online) {
+              this.tempCompletedChapters.chapters.push(chapter)
+            } else {
+              this.draftChapters.push({chapter})
             }
           }, this)
+
+          if (this.$data.tempCompletedChapters.chapters.length > 0) {
+            this.$data.completedChapters.push(this.$data.tempCompletedChapters)
+          }
         }, this)
       })
       .finally(() => {
         this.$store.state.loader = false
+        console.log(this.$data.completedChapters)
       })
   }
 }
