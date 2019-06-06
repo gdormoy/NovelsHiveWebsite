@@ -2,54 +2,97 @@
   <div id="account">
     <h1>My Account</h1>
     <div id="account-content">
-      <div>
-        Username: {{user.data.username}}
-      </div>
-      <div>
-        Email: {{user.data.email}}
-      </div>
       <v-form
         ref="form"
         v-model="formIsValid"
         lazy-validation
       >
-        <div>
-          Password:
+        <v-flex xs12 sm6 md3 class="body-1">
           <v-text-field
+          v-if="changeUsername"
+          v-model="username"
+          :counter="usernameMaxLength"
+          label="Username"
+          :error="usernameError"
+          :error-messages="usernameErrorMessages"
+          @input="usernameExists"
+          required
+        ></v-text-field>
+          <div v-else>
+            Username: {{user.username}}
+            <v-btn fab large color="white" @click="changeUsernameMethode">
+              <v-icon dark>edit</v-icon>
+            </v-btn>
+          </div>
+        </v-flex>
+        <v-flex xs4 order-md3 order-xs2 class="body-1">
+          <v-text-field
+            v-if="changeEmail"
+            v-model="email"
+            label="E-mail"
+            :error="emailError"
+            :error-messages="emailErrorMessages"
+            @input="emailExists"
+            required
+          ></v-text-field>
+          <div v-else>
+            Email: {{user.email}}
+            <v-btn fab large color="white" @click="changeEmailMethode">
+              <v-icon dark>edit</v-icon>
+            </v-btn>
+          </div>
+        </v-flex>
+        <v-flex xs4 order-md3 order-xs2 class="body-1">
+          <div v-if="changePassword">
+            <v-text-field
             v-model="password"
             :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
             :type="passwordShow ? 'text' : 'password'"
             label="Password"
             required
             @click:append="passwordShow = !passwordShow"
-          ></v-text-field>
-        </div>
-        <div>
-          New Password:
-          <v-text-field
-          v-model="newPassword"
-          :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
-          :type="passwordShow ? 'text' : 'password'"
-          label="Password"
-          required
-          @click:append="passwordShow = !passwordShow"
-          ></v-text-field>
-        </div>
-        <div>
-          Confirm Password
-          <v-text-field
-          v-model="passwordConfirm"
-          :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
-          :type="passwordShow ? 'text' : 'password'"
-          label="Password"
-          required
-          @click:append="passwordShow = !passwordShow"
-          ></v-text-field>
-        </div>
+            ></v-text-field>
+            <v-text-field
+            v-model="newPassword"
+            :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+            :type="passwordShow ? 'text' : 'password'"
+            label="New Password"
+            required
+            @click:append="passwordShow = !passwordShow"
+            ></v-text-field>
+            <v-text-field
+            v-model="passwordConfirm"
+            :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
+            :type="passwordShow ? 'text' : 'password'"
+            label="Confirm New Password"
+            required
+            @click:append="passwordShow = !passwordShow"
+            ></v-text-field>
+          </div>
+          <div v-else>
+            Password:
+            <v-btn fab large color="white" @click="changePasswordMethode">
+              <v-icon dark>edit</v-icon>
+            </v-btn>
+          </div>
+        </v-flex>
+        <v-flex xs4 order-md3 order-xs2 class="body-1">
+          <v-textarea
+            v-if="changeDescription"
+            name="input-7-1"
+            label="Description"
+            :value="user.description"
+            v-model="description"
+            hint="Hint text"
+          ></v-textarea>
+          <div v-else>
+            Description: {{user.description}}
+            <v-btn fab large color="white" @click="changeDescriptionMethode">
+              <v-icon dark>edit</v-icon>
+            </v-btn>
+          </div>
+        </v-flex>
       </v-form>
-      <div>
-        Description: {{user.data.description}}
-      </div>
     </div>
     <v-btn
       :disabled="!formIsValid"
@@ -76,15 +119,24 @@ export default {
       userError: false,
       userErrorMessage: '',
       user: '',
-      username: '',
       email: '',
+      emailSaved: '',
       password: '',
+      changePassword: false,
       newPassword: '',
       description: '',
       passwordConfirm: '',
       passwordShow: false,
       formIsValid: false,
-      serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE
+      changeUsername: false,
+      changeEmail: false,
+      changeDescription: false,
+      serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE,
+      username: '',
+      usernameError: false,
+      usernameErrorMessages: '',
+      usernameSaved: '',
+      usernameMaxLength: 50
     }
   },
   mounted () {
@@ -93,8 +145,9 @@ export default {
         'X-Access-Token': localStorage.accessToken
       }
     })
-      .then()
-      .then(response => (this.user = response))
+      .then(response => (this.user = response.data))
+      .then(response => (this.user.description = Buffer.from(this.user.description.data).toString('ascii')))
+      .then(response => (this.description = this.user.description))
       .catch(error => this.getUserFailed(error))
   },
   methods: {
@@ -113,38 +166,43 @@ export default {
         this.userErrorMessage = this.serverDoesNotRespondErrorMessage
       }
     },
+    usernameExists () {
+      if (this.$data.username !== this.$data.usernameSaved) {
+        this.$data.usernameError = false
+        this.$data.usernameErrorMessages = ''
+      }
+    },
+    emailExists () {
+      if (this.$data.email !== this.$data.emailSaved) {
+        this.$data.emailError = false
+        this.$data.emailErrorMessages = ''
+      }
+    },
+    changeUsernameMethode () {
+      this.changeUsername = true
+    },
+    changeEmailMethode () {
+      this.changeEmail = true
+    },
+    changeDescriptionMethode () {
+      this.changeDescription = true
+    },
+    changePasswordMethode () {
+      this.changePassword = true
+    },
     validate () {
       if (this.$refs.form.validate()) {
-        let data = this.$data
-        this.$data.desctiptionSaved = this.$data.description
-
-        console.log(data.username, data.email, data.description)
+        console.log(this.username, this.email, this.description, this.password)
+        console.log(this.newPassword)
         console.log(localStorage.accessToken)
+        console.log(localStorage.userId)
 
-        if (data.password !== '') {
-          this.$http.put(process.env.API_LOCATION + '/users/' + localStorage.userId, {
-            'username': this.user.data.username,
-            'email': this.user.data.email,
-            'password': data.password,
-            'description': this.user.data.description
-          },
-          {
-            headers: {
-              'X-Access-Token': localStorage.accessToken
-            }
-          }).then(response => {
-            // Redirect to validation page
-            this.$router.push('/')
-          }).catch(error => {
-            if (error.response) {
-              this.$data.serverError = true
-            }
-          })
-          if (data.newPassword !== '') {
-            if (data.newPassword === data.passwordConfirm) {
+        if (this.changePassword) {
+          if (this.newPassword !== '') {
+            if (this.newPassword === this.passwordConfirm) {
               this.$http.post(process.env.API_LOCATION + '/users/change-password', {
-                oldPassword: data.password,
-                newPassword: data.newPassword
+                oldPassword: this.password,
+                newPassword: this.newPassword
               },
               {
                 headers: {
@@ -153,8 +211,55 @@ export default {
               })
             }
           }
+          this.changePassword = false
+        }
+        if (this.changeUsername) {
+          this.$http.patch(process.env.API_LOCATION + '/users/' + localStorage.userId, {
+            'username': this.username
+          },
+          {
+            headers: {
+              'X-Access-Token': localStorage.accessToken
+            }
+          }).catch(error => {
+            if (error.response) {
+              this.$data.serverError = true
+            }
+          })
+          this.changeUsername = false
+        }
+        if (this.changeEmail) {
+          this.$http.patch(process.env.API_LOCATION + '/users/' + localStorage.userId, {
+            'email': this.email
+          },
+          {
+            headers: {
+              'X-Access-Token': localStorage.accessToken
+            }
+          }).catch(error => {
+            if (error.response) {
+              this.$data.serverError = true
+            }
+          })
+          this.changeEmail = false
+        }
+        if (this.changeDescription) {
+          this.$http.patch(process.env.API_LOCATION + '/users/' + localStorage.userId, {
+            'description': this.description
+          },
+          {
+            headers: {
+              'X-Access-Token': localStorage.accessToken
+            }
+          }).catch(error => {
+            if (error.response) {
+              this.$data.serverError = true
+            }
+          })
+          this.changeDescription = false
         }
       }
+      window.location.reload()
     },
     reset () {
       this.$refs.form.reset()
