@@ -36,12 +36,12 @@
           <v-list-tile-title>Sign in</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
-      <v-list-tile v-if="userIsLogged" @click="redirect('/account')">
-        <v-list-tile-action><v-icon>account_circle</v-icon></v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>My Account</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+<!--      <v-list-tile v-if="userIsLogged" @click="redirect('/account')">-->
+<!--        <v-list-tile-action><v-icon>account_circle</v-icon></v-list-tile-action>-->
+<!--        <v-list-tile-content>-->
+<!--          <v-list-tile-title>My Account</v-list-tile-title>-->
+<!--        </v-list-tile-content>-->
+<!--      </v-list-tile>-->
 
     </v-list>
   </v-navigation-drawer>
@@ -51,7 +51,8 @@
 export default {
   data: () => ({
     items: [
-      { title: 'Home', icon: 'home', location: '/' }
+      { title: 'Home', icon: 'home', location: '/' },
+      { title: 'Account', icon: 'account_circle', location: '/account' }
     ]
   }),
   computed: {

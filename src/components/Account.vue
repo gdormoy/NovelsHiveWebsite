@@ -9,8 +9,8 @@
       >
         <v-flex xs12 sm6 md3 class="body-1">
           <v-text-field
-          v-if="changeUsername"
           v-model="username"
+          :rules="usernameRules"
           :counter="usernameMaxLength"
           label="Username"
           :error="usernameError"
@@ -18,16 +18,9 @@
           @input="usernameExists"
           required
         ></v-text-field>
-          <div v-else>
-            Username: {{user.username}}
-            <v-btn fab large color="white" @click="changeUsernameMethode">
-              <v-icon dark>edit</v-icon>
-            </v-btn>
-          </div>
         </v-flex>
         <v-flex xs4 order-md3 order-xs2 class="body-1">
           <v-text-field
-            v-if="changeEmail"
             v-model="email"
             label="E-mail"
             :error="emailError"
@@ -35,17 +28,12 @@
             @input="emailExists"
             required
           ></v-text-field>
-          <div v-else>
-            Email: {{user.email}}
-            <v-btn fab large color="white" @click="changeEmailMethode">
-              <v-icon dark>edit</v-icon>
-            </v-btn>
-          </div>
         </v-flex>
         <v-flex xs4 order-md3 order-xs2 class="body-1">
-          <div v-if="changePassword">
+          <div v-if="changePassword" style="font-size: 1em">
             <v-text-field
             v-model="password"
+            :rules="passwordRules"
             :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
             :type="passwordShow ? 'text' : 'password'"
             label="Password"
@@ -54,6 +42,7 @@
             ></v-text-field>
             <v-text-field
             v-model="newPassword"
+            :rules="newPasswordRules"
             :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
             :type="passwordShow ? 'text' : 'password'"
             label="New Password"
@@ -62,6 +51,7 @@
             ></v-text-field>
             <v-text-field
             v-model="passwordConfirm"
+            :rules="newPasswordConfirmRules"
             :append-icon="passwordShow ? 'visibility' : 'visibility_off'"
             :type="passwordShow ? 'text' : 'password'"
             label="Confirm New Password"
@@ -71,26 +61,19 @@
           </div>
           <div v-else>
             Password:
-            <v-btn fab large color="white" @click="changePasswordMethode">
+            <v-btn fab small color="white" @click="changePasswordMethode">
               <v-icon dark>edit</v-icon>
             </v-btn>
           </div>
         </v-flex>
         <v-flex xs4 order-md3 order-xs2 class="body-1">
           <v-textarea
-            v-if="changeDescription"
             name="input-7-1"
             label="Description"
             :value="user.description"
             v-model="description"
             hint="Hint text"
           ></v-textarea>
-          <div v-else>
-            Description: {{user.description}}
-            <v-btn fab large color="white" @click="changeDescriptionMethode">
-              <v-icon dark>edit</v-icon>
-            </v-btn>
-          </div>
         </v-flex>
       </v-form>
     </div>
@@ -101,26 +84,30 @@
     >
       Validate
     </v-btn>
-
     <v-btn
-      color="error"
-      @click="reset"
+      color="blue-grey"
+      class="white--text"
+      @click="downloadInformation"
     >
-      Reset Form
+      Download Informations
+      <v-icon right dark>cloud_download</v-icon>
     </v-btn>
   </div>
 </template>
 
 <script>
+import JsPDF from 'jspdf'
 export default {
   name: 'Account',
-  data: () => {
-    return {
+  data: () => (
+    {
       userError: false,
-      userErrorMessage: '',
+      userErrorMessages: '',
       user: '',
       email: '',
+      emailErrorMessages: '',
       emailSaved: '',
+      emailError: false,
       password: '',
       changePassword: false,
       newPassword: '',
@@ -128,17 +115,32 @@ export default {
       passwordConfirm: '',
       passwordShow: false,
       formIsValid: false,
-      changeUsername: false,
-      changeEmail: false,
-      changeDescription: false,
       serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE,
       username: '',
       usernameError: false,
       usernameErrorMessages: '',
       usernameSaved: '',
-      usernameMaxLength: 50
+      usernameMaxLength: 50,
+      usernameRules: [
+        v => !!v || 'Username is required',
+        v => (v && v.length <= 50) || 'Username must be shorter than 50 characters',
+        v => (v && v.length >= 3) || 'Username must be longer than 3 characters'
+      ],
+      passwordRules: [
+        v => !!v || 'Password is required'
+      ],
+      newPasswordRules: [
+        v => !!v || 'Password is required'
+      ],
+      newPasswordConfirmRules: [
+        v => !!v || 'You must confirm your password'
+      ],
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'Email must be valid'
+      ]
     }
-  },
+  ),
   mounted () {
     this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId, {
       headers: {
@@ -147,7 +149,11 @@ export default {
     })
       .then(response => (this.user = response.data))
       .then(response => (this.user.description = Buffer.from(this.user.description.data).toString('ascii')))
-      .then(response => (this.description = this.user.description))
+      .then(response => [
+        (this.username = this.user.username),
+        (this.email = this.user.email),
+        (this.description = this.user.description)
+      ])
       .catch(error => this.getUserFailed(error))
   },
   methods: {
@@ -178,15 +184,6 @@ export default {
         this.$data.emailErrorMessages = ''
       }
     },
-    changeUsernameMethode () {
-      this.changeUsername = true
-    },
-    changeEmailMethode () {
-      this.changeEmail = true
-    },
-    changeDescriptionMethode () {
-      this.changeDescription = true
-    },
     changePasswordMethode () {
       this.changePassword = true
     },
@@ -213,56 +210,63 @@ export default {
           }
           this.changePassword = false
         }
-        if (this.changeUsername) {
-          this.$http.patch(process.env.API_LOCATION + '/users/' + localStorage.userId, {
-            'username': this.username
-          },
-          {
-            headers: {
-              'X-Access-Token': localStorage.accessToken
-            }
-          }).catch(error => {
-            if (error.response) {
+        this.$http.patch(process.env.API_LOCATION + '/users/' + localStorage.userId, {
+          'username': this.username,
+          'email': this.email,
+          'description': this.description
+        },
+        {
+          headers: {
+            'X-Access-Token': localStorage.accessToken
+          }
+        }).catch(error => {
+          if (error.response) {
+            if (error.response.status === 422) {
+              for (let message in error.response.data.error.details.messages) {
+                switch (message) {
+                  case 'username':
+                    this.$data.usernameError = true
+                    this.$data.usernameErrorMessages = 'Username already exist'
+                    break
+                  case 'email':
+                    this.$data.emailError = true
+                    this.$data.emailErrorMessages = 'Username already exist'
+                    break
+                }
+              }
+            } else {
               this.$data.serverError = true
             }
-          })
-          this.changeUsername = false
-        }
-        if (this.changeEmail) {
-          this.$http.patch(process.env.API_LOCATION + '/users/' + localStorage.userId, {
-            'email': this.email
-          },
-          {
-            headers: {
-              'X-Access-Token': localStorage.accessToken
-            }
-          }).catch(error => {
-            if (error.response) {
-              this.$data.serverError = true
-            }
-          })
-          this.changeEmail = false
-        }
-        if (this.changeDescription) {
-          this.$http.patch(process.env.API_LOCATION + '/users/' + localStorage.userId, {
-            'description': this.description
-          },
-          {
-            headers: {
-              'X-Access-Token': localStorage.accessToken
-            }
-          }).catch(error => {
-            if (error.response) {
-              this.$data.serverError = true
-            }
-          })
-          this.changeDescription = false
-        }
+          }
+        })
       }
-      window.location.reload()
     },
-    reset () {
-      this.$refs.form.reset()
+    downloadInformation () {
+      let pdfName = 'user_informations'
+      var doc = new JsPDF()
+      var stories = ''
+      var comments = ''
+
+      this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/publishedCommentaries', {
+        headers: {
+          'X-Access-Token': localStorage.accessToken
+        }
+      })
+        .then(response => (comments = response.data))
+        .catch(error => (this.getUserFailed(error)))
+      this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/stories', {
+        headers: {
+          'X-Access-Token': localStorage.accessToken
+        }
+      })
+        .then(response => (stories = response.data))
+        .catch(error => (this.getUserFailed(error)))
+      doc.text('username: ' + this.user.username, 10, 10)
+      doc.text('email: ' + this.user.email, 10, 20)
+      doc.text('description: ' + this.user.description, 10, 30)
+      doc.text('stories: ' + stories, 10, 40)
+      doc.text('comments: ' + comments, 10, 50)
+      doc.save(pdfName + '.pdf')
     }
   }
 }
