@@ -8,6 +8,15 @@
       lazy-validation
     >
 
+      <v-alert
+        :value="creationError"
+        type="error"
+        dismissible
+        style="width: 80%"
+      >
+        {{creationErrorMessage}}
+      </v-alert>
+
       <v-text-field
         v-model="title"
         label="Title"
@@ -45,7 +54,9 @@ export default {
       synopsisRules: [
         v => !!v || 'Let your reader know the purpose of your story'
       ],
-      serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE
+      serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE,
+      creationError: false,
+      creationErrorMessage: ''
     }
   },
   methods: {
@@ -54,7 +65,6 @@ export default {
         this.formIsValid = false
         return
       }
-      console.log('Time to create the story')
 
       let now = Date.now()
 
@@ -67,8 +77,25 @@ export default {
       }
 
       this.$http.post(process.env.API_LOCATION + '/stories', requestBody)
-        .then(response => console.log(response))
-        .catch(error => console.log(error))
+        .then(response => this.createSuccessful(response))
+        .catch(error => this.createFailed(error))
+    },
+    createFailed (error) {
+      this.creationError = true
+
+      if (!error.response) {
+        this.creationErrorMessage = this.serverDoesNotRespondErrorMessage
+        return
+      }
+
+      if (error.response.status === 409) {
+        this.creationErrorMessage = 'You already created a story with this name'
+      } else {
+        this.creationErrorMessage = this.serverDoesNotRespondErrorMessage
+      }
+    },
+    createSuccessful (response) {
+      this.$router.push('/') // Where to redirect ?
     }
   }
 }
