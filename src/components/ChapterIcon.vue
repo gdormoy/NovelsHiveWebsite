@@ -6,7 +6,7 @@
           max-width="150px"
         >
           <v-img
-            src="../../static/book_img.jpg"
+            src="../../static/book_img.png"
           >
             <v-expand-transition>
               <div
