@@ -6,6 +6,7 @@ import Register from '@/components/Register'
 import Login from '@/components/Login'
 import NovelWriter from '../components/NovelWriter'
 import auth from '../middleware/auth'
+import StoryCreator from '../components/StoryCreator'
 import Account from '../components/Account'
 import MyStories from '../components/MyStories'
 
@@ -37,6 +38,14 @@ const router = new Router({
       component: NovelWriter
     },
     {
+      path: '/createStory',
+      name: 'createStory',
+      component: StoryCreator,
+      meta: {
+        middleware: auth
+      }
+    },
+    {
       path: '/account',
       name: 'Account',
       component: Account,
@@ -48,6 +57,7 @@ const router = new Router({
       name: 'my-stories',
       component: MyStories
     }
+
   ]
 })
 
