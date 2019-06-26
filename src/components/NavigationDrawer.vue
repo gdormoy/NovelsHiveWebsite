@@ -45,7 +45,8 @@
 export default {
   data: () => ({
     items: [
-      { title: 'Home', icon: 'home', location: '/' }
+      { title: 'Home', icon: 'home', location: '/' },
+      { title: 'My stories', icon: 'library_books', location: '/my-stories' }
     ]
   }),
   computed: {

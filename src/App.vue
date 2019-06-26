@@ -11,15 +11,19 @@
         </v-layout>
       </v-container>
     </v-content>
+
+    <loader></loader>
   </div>
 </template>
 
 <script>
 import NavigationDrawer from './components/NavigationDrawer'
 import Toolbar from './components/Toolbar'
+import Loader from './components/Loader'
+
 export default {
   name: 'App',
-  components: {Toolbar, NavigationDrawer}
+  components: {Toolbar, NavigationDrawer, Loader}
 }
 </script>
 
