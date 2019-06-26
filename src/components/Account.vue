@@ -87,16 +87,15 @@
     <v-btn
       color="blue-grey"
       class="white--text"
-      @click="downloadInformation"
+      @click="getInformations"
     >
-      Download Informations
-      <v-icon right dark>cloud_download</v-icon>
+      Send Informations
+      <v-icon right dark>email</v-icon>
     </v-btn>
   </div>
 </template>
 
 <script>
-import JsPDF from 'jspdf'
 export default {
   name: 'Account',
   data: () => (
@@ -241,32 +240,14 @@ export default {
         })
       }
     },
-    downloadInformation () {
-      let pdfName = 'user_informations'
-      var doc = new JsPDF()
-      var stories = ''
-      var comments = ''
-
-      this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/publishedCommentaries', {
+    getInformations () {
+      this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/gdpr', {
         headers: {
           'X-Access-Token': localStorage.accessToken
         }
       })
-        .then(response => (comments = response.data))
+        .then(response => (console.log(response)))
         .catch(error => (this.getUserFailed(error)))
-      this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/stories', {
-        headers: {
-          'X-Access-Token': localStorage.accessToken
-        }
-      })
-        .then(response => (stories = response.data))
-        .catch(error => (this.getUserFailed(error)))
-      doc.text('username: ' + this.user.username, 10, 10)
-      doc.text('email: ' + this.user.email, 10, 20)
-      doc.text('description: ' + this.user.description, 10, 30)
-      doc.text('stories: ' + stories, 10, 40)
-      doc.text('comments: ' + comments, 10, 50)
-      doc.save(pdfName + '.pdf')
     }
   }
 }
