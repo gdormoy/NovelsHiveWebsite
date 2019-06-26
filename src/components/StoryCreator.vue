@@ -50,8 +50,25 @@ export default {
   },
   methods: {
     createStory () {
-      console.log(this.title)
-      console.log(this.synopsis)
+      if ((this.title === null || this.title === '') || (this.synopsis === null || this.synopsis === '')) {
+        this.formIsValid = false
+        return
+      }
+      console.log('Time to create the story')
+
+      let now = Date.now()
+
+      let requestBody = {
+        'title': this.title,
+        'synopsis': this.synopsis,
+        'publication_date': now,
+        'update_date': now,
+        'userId': localStorage.userId
+      }
+
+      this.$http.post(process.env.API_LOCATION + '/stories', requestBody)
+        .then(response => console.log(response))
+        .catch(error => console.log(error))
     }
   }
 }
