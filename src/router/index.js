@@ -1,10 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import auth from '../middleware/auth'
 import HelloWorld from '@/components/HelloWorld'
 import Register from '@/components/Register'
 import Login from '@/components/Login'
 import auth from '../middleware/auth'
 import Account from '../components/Account'
+import MyStories from '../components/MyStories'
 
 Vue.use(Router)
 
@@ -34,7 +36,11 @@ const router = new Router({
       component: Account,
       meta: {
         middleware: auth
-      }
+    },
+    {
+      path: '/my-stories',
+      name: 'my-stories',
+      component: MyStories
     }
   ]
 })
