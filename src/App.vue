@@ -1,19 +1,21 @@
 <template>
-  <div id="app">
-    <navigation-drawer />
-    <toolbar />
-    <v-content>
-      <v-container fluid fill-height>
-        <v-layout justify-center column>
-          <v-flex shrink>
-            <router-view/>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-content>
+  <v-app>
+    <div id="app">
+      <navigation-drawer />
+      <toolbar />
+      <v-content>
+        <v-container fluid fill-height>
+          <v-layout justify-center column>
+            <v-flex shrink>
+              <router-view/>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-content>
 
-    <loader></loader>
-  </div>
+      <loader></loader>
+    </div>
+  </v-app>
 </template>
 
 <script>
