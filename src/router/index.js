@@ -4,8 +4,6 @@ import auth from '../middleware/auth'
 import HelloWorld from '@/components/HelloWorld'
 import Register from '@/components/Register'
 import Login from '@/components/Login'
-import auth from '../middleware/auth'
-import Account from '../components/Account'
 import MyStories from '../components/MyStories'
 
 Vue.use(Router)
@@ -29,13 +27,6 @@ const router = new Router({
       path: '/login',
       name: 'Login',
       component: Login
-    },
-    {
-      path: '/account',
-      name: 'Account',
-      component: Account,
-      meta: {
-        middleware: auth
     },
     {
       path: '/my-stories',
