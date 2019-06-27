@@ -12,7 +12,7 @@
 
       <v-select v-model="story" :items="userStories" label="Story" attach></v-select>
 
-      <editor />
+      <editor btn-text="Save" @btn-clicked="saveChapter" show-preview="true"/>
     </div>
 </template>
 
@@ -59,6 +59,11 @@ export default {
       .finally(() => {
         this.$store.state.loader = false
       })
+  },
+  methods: {
+    saveChapter (editorData) {
+      console.log(editorData)
+    }
   }
 }
 </script>
