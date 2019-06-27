@@ -52,7 +52,8 @@ export default {
   data: () => ({
     items: [
       { title: 'Home', icon: 'home', location: '/' },
-      { title: 'Account', icon: 'account_circle', location: '/account' }
+      { title: 'Account', icon: 'account_circle', location: '/account' },
+      { title: 'My stories', icon: 'library_books', location: '/my-stories' }
     ]
   }),
   computed: {
