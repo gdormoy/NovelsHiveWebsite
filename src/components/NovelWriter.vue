@@ -8,7 +8,6 @@
         :type="storyErrorType"
         dismissible
         style="width: 80%"
-        @click="redirectToStoryCreation"
       >{{storyErrorMessage}}</v-alert>
 
       <v-select v-model="story" :items="userStories" label="Story" attach></v-select>
