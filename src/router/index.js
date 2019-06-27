@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import auth from '../middleware/auth'
 import HelloWorld from '@/components/HelloWorld'
 import Register from '@/components/Register'
 import Login from '@/components/Login'
@@ -51,6 +50,7 @@ const router = new Router({
       component: Account,
       meta: {
         middleware: auth
+      }
     },
     {
       path: '/my-stories',
