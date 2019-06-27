@@ -36,7 +36,6 @@
           <v-list-tile-title>Sign in</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
-
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -46,6 +45,7 @@ export default {
   data: () => ({
     items: [
       { title: 'Home', icon: 'home', location: '/' },
+      { title: 'Account', icon: 'account_circle', location: '/account' },
       { title: 'My stories', icon: 'library_books', location: '/my-stories' }
     ]
   }),
