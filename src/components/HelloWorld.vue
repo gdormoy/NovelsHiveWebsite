@@ -84,8 +84,10 @@
 </template>
 
 <script>
+import Editor from './Editor'
 export default {
   name: 'HelloWorld',
+  components: {Editor},
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'

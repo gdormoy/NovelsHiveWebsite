@@ -131,8 +131,6 @@ export default {
         let data = this.$data
 
         if (data.password === data.passwordConfirm) {
-          console.log('Call API for login')
-
           this.$data.usernameSaved = this.$data.username
           this.$data.emailSaved = this.$data.email
 

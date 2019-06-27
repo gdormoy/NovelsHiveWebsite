@@ -1,25 +1,31 @@
 <template>
-  <div id="app">
-    <navigation-drawer />
-    <toolbar />
-    <v-content>
-      <v-container fluid fill-height>
-        <v-layout justify-center column>
-          <v-flex shrink>
-            <router-view/>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-content>
-  </div>
+  <v-app>
+    <div id="app">
+      <navigation-drawer />
+      <toolbar />
+      <v-content>
+        <v-container fluid fill-height>
+          <v-layout justify-center column>
+            <v-flex shrink>
+              <router-view/>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-content>
+
+      <loader></loader>
+    </div>
+  </v-app>
 </template>
 
 <script>
 import NavigationDrawer from './components/NavigationDrawer'
 import Toolbar from './components/Toolbar'
+import Loader from './components/Loader'
+
 export default {
   name: 'App',
-  components: {Toolbar, NavigationDrawer}
+  components: {Toolbar, NavigationDrawer, Loader}
 }
 </script>
 

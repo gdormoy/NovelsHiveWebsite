@@ -23,6 +23,7 @@ export default new Vuex.Store({
       // fixed: true,
       // sets if the toolbar contents is leaving space for drawer (false) or not (true)
       clippedLeft: true
-    }
+    },
+    loader: false
   }
 })
