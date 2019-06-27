@@ -16,6 +16,11 @@
         label="Story"
         attach></v-select>
 
+      <v-text-field
+        v-model="chapterTitle"
+        label="Title"
+        required></v-text-field>
+
       <editor
         btn-text="Save"
         @btn-clicked="saveChapter"
@@ -36,7 +41,8 @@ export default {
       storyErrorType: 'warning',
       storyErrorMessage: '',
       serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE,
-      storyObjects: []
+      storyObjects: [],
+      chapterTitle: ''
     }
   },
   mounted () {
@@ -79,12 +85,16 @@ export default {
       if (this.story === '') {
         return this.setError('You need to choose a story')
       }
+      if (this.chapterTitle === '') {
+        return this.setError('A chapter need a title')
+      }
 
       console.log(this.getStoryId(this.story))
 
       this.$http.post(process.env.API_LOCATION + '/chapters', {
         text: editorData,
         update_date: new Date(),
+        title: this.chapterTitle,
         storyId: this.getStoryId(this.story)
       }).then(response => this.saveSuccess(response))
         .catch(err => this.saveFailed(err))
