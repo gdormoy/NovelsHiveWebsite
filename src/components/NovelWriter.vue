@@ -1,18 +1,25 @@
 <template>
     <div id="novelWriter">
       <h1>Tell me a story</h1>
+    <v-alert
+      id="storyAlert"
+      :value="storyError"
+      :type="storyErrorType"
+      dismissible
+      style="width: 80%"
+      @input="updateStoryErrorValue"
+    >{{storyErrorMessage}}</v-alert>
 
-      <v-alert
-        id="storyAlert"
-        :value="storyError"
-        :type="storyErrorType"
-        dismissible
-        style="width: 80%"
-      >{{storyErrorMessage}}</v-alert>
+    <v-select
+        v-model="story"
+        :items="userStories"
+        label="Story"
+        attach></v-select>
 
-      <v-select v-model="story" :items="userStories" label="Story" attach></v-select>
-
-      <editor btn-text="Save" @btn-clicked="saveChapter" show-preview="true"/>
+      <editor
+        btn-text="Save"
+        @btn-clicked="saveChapter"
+        show-preview="true" />
     </div>
 </template>
 
@@ -28,7 +35,8 @@ export default {
       storyError: false,
       storyErrorType: 'warning',
       storyErrorMessage: '',
-      serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE
+      serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE,
+      storyObjects: []
     }
   },
   mounted () {
@@ -48,12 +56,15 @@ export default {
         this.storyErrorMessage = 'You don\'t have any story yet. Try to create one :)'
         this.storyErrorType = 'warning'
       }
-      this.userStories = response.data.map(story => story.title)
+
+      data.forEach((story) => {
+        console.log(story.id)
+        this.storyObjects.push(story)
+        this.userStories.push(story.title)
+      }, this)
     })
       .catch(err => {
-        this.storyError = true
-        this.storyErrorMessage = this.serverDoesNotRespondErrorMessage
-        this.storyErrorType = 'error'
+        this.setError(this.serverDoesNotRespondErrorMessage)
         console.log(err)
       })
       .finally(() => {
@@ -62,7 +73,52 @@ export default {
   },
   methods: {
     saveChapter (editorData) {
-      console.log(editorData)
+      if (editorData === '') {
+        return this.setError('You need to write something')
+      }
+      if (this.story === '') {
+        return this.setError('You need to choose a story')
+      }
+
+      console.log(this.getStoryId(this.story))
+
+      this.$http.post(process.env.API_LOCATION + '/chapters', {
+        text: editorData,
+        update_date: new Date(),
+        storyId: this.getStoryId(this.story)
+      }).then(response => this.saveSuccess(response))
+        .catch(err => this.saveFailed(err))
+    },
+    saveSuccess (response) {
+      console.log(response)
+
+      if (response.status !== 200) {
+        return this.saveFailed(null)
+      }
+
+      this.$router.push('/my-stories')
+    },
+    saveFailed (error) {
+      if (!error.response) {
+        return this.setError(this.serverDoesNotRespondErrorMessage)
+      }
+      console.log(error)
+    },
+    setError (errorMessage) {
+      this.storyError = true
+      this.storyErrorMessage = errorMessage
+      this.storyErrorType = 'error'
+    },
+    updateStoryErrorValue () {
+      this.storyError = false
+    },
+    getStoryId (title) {
+      for (let counter = 0; counter < this.storyObjects.length; ++counter) {
+        let el = this.storyObjects[counter]
+        if (el.title === title) {
+          return el.id
+        }
+      }
     }
   }
 }
