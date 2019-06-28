@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Register from '@/components/Register'
 import Login from '@/components/Login'
+import ReadChapter from '@/components/ReadChapter'
 import NovelWriter from '../components/NovelWriter'
 import auth from '../middleware/auth'
 import StoryCreator from '../components/StoryCreator'
@@ -59,6 +60,14 @@ const router = new Router({
       path: '/my-stories',
       name: 'my-stories',
       component: MyStories,
+      meta: {
+        middleware: auth
+      }
+    },
+    {
+      path: '/read/:id',
+      name: 'read',
+      component: ReadChapter,
       meta: {
         middleware: auth
       }
