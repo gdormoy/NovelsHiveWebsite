@@ -38,7 +38,7 @@ export default {
       nextChapterId: null
     }
   },
-  mounted () {
+  created () {
     this.loadData()
   },
   methods: {
