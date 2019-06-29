@@ -1,17 +1,22 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
-import Register from '@/components/Register'
-import Login from '@/components/Login'
+import HelloWorld from '../components/HelloWorld'
+import Register from '../components/Register'
+import Login from '../components/Login'
+import ReadChapter from '../components/ReadChapter'
 import NovelWriter from '../components/NovelWriter'
 import auth from '../middleware/auth'
 import StoryCreator from '../components/StoryCreator'
 import Account from '../components/Account'
 import MyStories from '../components/MyStories'
+import SearchStory from '../components/SearchStory'
 
 Vue.use(Router)
 
 const router = new Router({
+  scrollBehavior () {
+    return { x: 0, y: 0 }
+  },
   routes: [
     {
       path: '/',
@@ -34,10 +39,13 @@ const router = new Router({
     {
       path: '/write',
       name: 'NovelWriter',
-      component: NovelWriter
+      component: NovelWriter,
+      meta: {
+        middleware: auth
+      }
     },
     {
-      path: '/createStory',
+      path: '/create-story',
       name: 'createStory',
       component: StoryCreator,
       meta: {
@@ -55,10 +63,29 @@ const router = new Router({
     {
       path: '/my-stories',
       name: 'my-stories',
-      component: MyStories
+      component: MyStories,
+      meta: {
+        middleware: auth
+      }
+    },
+    {
+      path: '/read/:id',
+      name: 'read',
+      component: ReadChapter,
+      meta: {
+        middleware: auth
+      }
+    },
+    {
+      path: '/search',
+      name: 'Search',
+      component: SearchStory,
+      meta: {
+        middleware: auth
+      }
     }
-
-  ]
+  ],
+  mode: 'history'
 })
 
 function nextFactory (context, middleware, index) {

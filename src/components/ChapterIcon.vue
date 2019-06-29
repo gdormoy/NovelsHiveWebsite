@@ -12,7 +12,8 @@
               <div
                 v-if="hover"
                 class="d-flex transition-fast-in-fast-out grey darken-2 v-card--reveal white--text pa-2"
-                style="height: 100%;"
+                style="height: 100%; cursor: pointer;"
+                @click="gotoReading(chapter.id)"
               >
                 <p>{{chapter.title}}</p>
               </div>
@@ -26,7 +27,12 @@
 <script>
 export default {
   props: ['chapter'],
-  name: 'ChapterIcon'
+  name: 'ChapterIcon',
+  methods: {
+    gotoReading (chapterId) {
+      this.$router.push('/read/' + chapterId)
+    }
+  }
 }
 </script>
 

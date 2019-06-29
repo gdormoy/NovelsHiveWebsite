@@ -27,7 +27,7 @@ export default {
       tempCompletedChapters: []
     }
   },
-  mounted () {
+  created () {
     this.$store.state.loader = true
     this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/chapters', {
       headers: {

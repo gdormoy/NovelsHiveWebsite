@@ -3,11 +3,11 @@
     <div id="app">
       <navigation-drawer />
       <toolbar />
-      <v-content>
+      <v-content style="margin-top: -5%;">
         <v-container fluid fill-height>
           <v-layout justify-center column>
             <v-flex shrink>
-              <router-view/>
+              <router-view :key="$route.fullPath"/>
             </v-flex>
           </v-layout>
         </v-container>

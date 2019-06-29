@@ -7,6 +7,14 @@
         v-model="formIsValid"
         lazy-validation
       >
+        <v-alert
+          id="accountAlert"
+          :value="userError"
+          type="error"
+          dismissible
+          style="width: 80%"
+        >{{userErrorMessages}}</v-alert>
+
         <v-flex xs12 sm6 md3 class="body-1">
           <v-text-field
           v-model="username"
@@ -140,26 +148,23 @@ export default {
       ]
     }
   ),
-  mounted () {
+  created () {
     this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId, {
       headers: {
         'X-Access-Token': localStorage.accessToken
       }
-    })
-      .then(response => (this.user = response.data))
-      .then(response => (this.user.description = Buffer.from(this.user.description.data).toString('ascii')))
-      .then(response => [
-        (this.username = this.user.username),
-        (this.email = this.user.email),
-        (this.description = this.user.description)
-      ])
-      .catch(error => this.getUserFailed(error))
+    }).then(response => {
+      let data = response.data
+      this.username = data.username
+      this.email = data.email
+      this.description = Buffer.from(data.description.data).toString('ascii')
+    }).catch(error => this.getUserFailed(error))
   },
   methods: {
     getUserFailed (error) {
-      this.userError = true
-      delete localStorage.accessToken
+      console.log(error)
 
+      this.userError = true
       if (!error.response) {
         this.userErrorMessage = this.serverDoesNotRespondErrorMessage
         return
@@ -188,11 +193,6 @@ export default {
     },
     validate () {
       if (this.$refs.form.validate()) {
-        console.log(this.username, this.email, this.description, this.password)
-        console.log(this.newPassword)
-        console.log(localStorage.accessToken)
-        console.log(localStorage.userId)
-
         if (this.changePassword) {
           if (this.newPassword !== '') {
             if (this.newPassword === this.passwordConfirm) {
@@ -219,6 +219,7 @@ export default {
             'X-Access-Token': localStorage.accessToken
           }
         }).catch(error => {
+          console.log(error)
           if (error.response) {
             if (error.response.status === 422) {
               for (let message in error.response.data.error.details.messages) {
@@ -261,7 +262,6 @@ export default {
   }
   #account-content div {
     margin-top: 25px;
-    font-size: 2em;
   }
 
 </style>
