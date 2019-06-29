@@ -11,13 +11,16 @@
     ></v-text-field>
 
     <v-list three-line>
-      <div
-        v-for="story in stories"
-        :key="story.id"
-      >
-        <h2>{{story.title}}</h2>
-        <p>{{story.synopsis}}</p>
-      </div>
+      <template v-for="story in stories">
+        <v-list-tile
+          :key="story.id"
+          @click="gotoReading">
+          <v-list-tile-content>
+            <v-list-tile-title>{{story.title}}</v-list-tile-title>
+            <v-list-tile-sub-title>{{story.synopsis}}</v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </template>
     </v-list>
   </div>
 </template>
@@ -69,6 +72,9 @@ export default {
       })
 
       return result
+    },
+    gotoReading () {
+      console.log('GotoReading()')
     }
   }
 }
