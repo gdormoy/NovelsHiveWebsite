@@ -7,7 +7,7 @@
         <v-container fluid fill-height>
           <v-layout justify-center column>
             <v-flex shrink>
-              <router-view/>
+              <router-view :key="$route.fullPath"/>
             </v-flex>
           </v-layout>
         </v-container>
