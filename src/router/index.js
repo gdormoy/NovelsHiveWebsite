@@ -41,7 +41,7 @@ const router = new Router({
       }
     },
     {
-      path: '/createStory',
+      path: '/create-story',
       name: 'createStory',
       component: StoryCreator,
       meta: {
