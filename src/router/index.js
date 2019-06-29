@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
-import Register from '@/components/Register'
-import Login from '@/components/Login'
-import ReadChapter from '@/components/ReadChapter'
+import HelloWorld from '../components/HelloWorld'
+import Register from '../components/Register'
+import Login from '../components/Login'
+import ReadChapter from '../components/ReadChapter'
 import NovelWriter from '../components/NovelWriter'
 import auth from '../middleware/auth'
 import StoryCreator from '../components/StoryCreator'
 import Account from '../components/Account'
 import MyStories from '../components/MyStories'
+import SearchStory from '../components/SearchStory'
 
 Vue.use(Router)
 
@@ -68,6 +69,14 @@ const router = new Router({
       path: '/read/:id',
       name: 'read',
       component: ReadChapter,
+      meta: {
+        middleware: auth
+      }
+    },
+    {
+      path: '/search',
+      name: 'Search',
+      component: SearchStory,
       meta: {
         middleware: auth
       }
