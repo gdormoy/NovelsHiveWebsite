@@ -14,6 +14,7 @@
         v-model="story"
         :items="userStories"
         label="Story"
+        menu-props="auto"
         attach></v-select>
 
       <v-text-field
@@ -45,7 +46,7 @@ export default {
       chapterTitle: ''
     }
   },
-  mounted () {
+  created () {
     this.$store.state.loader = true
     this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/stories', {
       headers: {

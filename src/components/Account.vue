@@ -148,7 +148,7 @@ export default {
       ]
     }
   ),
-  mounted () {
+  created () {
     this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId, {
       headers: {
         'X-Access-Token': localStorage.accessToken

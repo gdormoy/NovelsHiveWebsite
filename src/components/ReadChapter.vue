@@ -2,11 +2,24 @@
   <div id="chapterReader">
     <h1 style="margin-bottom: 5%">{{storyTitle}}</h1>
 
+    <chapter-navigation
+      :previous-chapter-id="previousChapterId"
+      :next-chapter-id="nextChapterId"
+      style="margin-bottom: 10%;"
+    ></chapter-navigation>
+
     <div style="text-align: left;">
       <h2>{{chapterTitle}}</h2>
       <div v-html="chapterData"></div>
     </div>
 
+    <chapter-navigation
+      :previous-chapter-id="previousChapterId"
+      :next-chapter-id="nextChapterId"
+      style="margin-bottom: 5%;"
+    ></chapter-navigation>
+
+    <!--
     <v-btn
         flat
         :disabled="previousChapterId === null"
@@ -22,13 +35,16 @@
         @click="gotoChapter(nextChapterId)">
       Next <v-icon>$vuetify.icons.next</v-icon>
     </v-btn>
-
+-->
   </div>
 </template>
 
 <script>
+import ChapterNavigation from './ChapterNavigation'
+
 export default {
   name: 'ReadChapter',
+  components: {ChapterNavigation},
   data () {
     return {
       storyTitle: '',
@@ -38,7 +54,7 @@ export default {
       nextChapterId: null
     }
   },
-  mounted () {
+  created () {
     this.loadData()
   },
   methods: {
@@ -71,7 +87,7 @@ export default {
     },
     gotoChapter (chapterId) {
       console.log('Entering gotoChapter(' + chapterId + ')')
-      this.$router.push('/read/' + chapterId.toString(), this.loadData)
+      this.$router.push('/read/' + chapterId.toString())
     }
   }
 }

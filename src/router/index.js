@@ -14,6 +14,9 @@ import SearchStory from '../components/SearchStory'
 Vue.use(Router)
 
 const router = new Router({
+  scrollBehavior () {
+    return { x: 0, y: 0 }
+  },
   routes: [
     {
       path: '/',
@@ -81,8 +84,8 @@ const router = new Router({
         middleware: auth
       }
     }
-
-  ]
+  ],
+  mode: 'history'
 })
 
 function nextFactory (context, middleware, index) {
