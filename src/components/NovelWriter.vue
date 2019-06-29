@@ -14,6 +14,7 @@
         v-model="story"
         :items="userStories"
         label="Story"
+        menu-props="auto"
         attach></v-select>
 
       <v-text-field
