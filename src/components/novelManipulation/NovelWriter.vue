@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import Editor from './Editor'
+import Editor from '../utils/Editor'
 export default {
   name: 'NovelWriter',
   components: {Editor},

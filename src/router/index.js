@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '../components/HelloWorld'
-import Register from '../components/Register'
-import Login from '../components/Login'
-import ReadChapter from '../components/ReadChapter'
-import NovelWriter from '../components/NovelWriter'
+import Register from '../components/utils/Register'
+import Login from '../components/utils/Login'
+import ReadChapter from '../components/novelManipulation/ReadChapter'
+import NovelWriter from '../components/novelManipulation/NovelWriter'
 import auth from '../middleware/auth'
-import StoryCreator from '../components/StoryCreator'
-import Account from '../components/Account'
-import MyStories from '../components/MyStories'
-import SearchStory from '../components/SearchStory'
+import StoryCreator from '../components/novelManipulation/StoryCreator'
+import Account from '../components/accounts/Account'
+import MyStories from '../components/novelPresentation/MyStories'
+import SearchStory from '../components/novelPresentation/SearchStory'
 
 Vue.use(Router)
 
@@ -22,9 +22,7 @@ const router = new Router({
       path: '/',
       name: 'HelloWorld',
       component: HelloWorld,
-      meta: {
-        middleware: auth
-      }
+      meta: { middleware: auth }
     },
     {
       path: '/register',
@@ -40,49 +38,37 @@ const router = new Router({
       path: '/write',
       name: 'NovelWriter',
       component: NovelWriter,
-      meta: {
-        middleware: auth
-      }
+      meta: { middleware: auth }
     },
     {
       path: '/create-story',
       name: 'createStory',
       component: StoryCreator,
-      meta: {
-        middleware: auth
-      }
+      meta: { middleware: auth }
     },
     {
       path: '/account',
       name: 'Account',
       component: Account,
-      meta: {
-        middleware: auth
-      }
+      meta: { middleware: auth }
     },
     {
       path: '/my-stories',
       name: 'my-stories',
       component: MyStories,
-      meta: {
-        middleware: auth
-      }
+      meta: { middleware: auth }
     },
     {
       path: '/read/:id',
       name: 'read',
       component: ReadChapter,
-      meta: {
-        middleware: auth
-      }
+      meta: { middleware: auth }
     },
     {
       path: '/search',
       name: 'Search',
       component: SearchStory,
-      meta: {
-        middleware: auth
-      }
+      meta: { middleware: auth }
     }
   ],
   mode: 'history'

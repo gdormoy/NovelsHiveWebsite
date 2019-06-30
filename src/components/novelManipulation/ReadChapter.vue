@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import ChapterNavigation from './ChapterNavigation'
+import ChapterNavigation from '../novelPresentation/ChapterNavigation'
 
 export default {
   name: 'ReadChapter',
