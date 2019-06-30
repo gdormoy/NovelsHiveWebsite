@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div id="myStories" data-app>
     <h1>My stories</h1>
 
@@ -9,6 +9,46 @@
     <div v-for="story in completedChapters" :key="story.storyName">
       <chapter-icon-list :chapters="story.chapters" :story-name="story.storyName"></chapter-icon-list>
     </div>
+
+    <v-speed-dial
+      v-model="fab"
+      fixed
+      bottom
+      right
+      direction="top"
+      open-on-hover
+      transition="slide-y-reverse-transition"
+    >
+      <template v-slot:activator>
+        <v-btn
+          v-model="fab"
+          color="blue darken-2"
+          dark
+          fab
+        >
+          <v-icon>add</v-icon>
+          <v-icon>close</v-icon>
+        </v-btn>
+      </template>
+      <v-btn
+        fab
+        dark
+        small
+        color="indigo"
+        @click="gotoStoryCreation"
+      >
+        <v-icon>book</v-icon>
+      </v-btn>
+      <v-btn
+        fab
+        dark
+        small
+        color="indigo"
+        @click="gotoChapterWriting"
+      >
+        <v-icon>description</v-icon>
+      </v-btn>
+    </v-speed-dial>
 
   </div>
 </template>
@@ -24,7 +64,8 @@ export default {
       stories: [],
       draftChapters: [],
       completedChapters: [],
-      tempCompletedChapters: []
+      tempCompletedChapters: [],
+      fab: false
     }
   },
   created () {
@@ -57,6 +98,14 @@ export default {
       .finally(() => {
         this.$store.state.loader = false
       })
+  },
+  methods: {
+    gotoStoryCreation () {
+      this.$router.push('/create-story')
+    },
+    gotoChapterWriting () {
+      this.$router.push('/write')
+    }
   }
 }
 </script>
