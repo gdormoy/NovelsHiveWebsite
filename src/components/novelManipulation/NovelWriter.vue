@@ -24,8 +24,13 @@
 
       <editor
         btn-text="Save"
-        @btn-clicked="saveChapter"
-        show-preview="true" />
+        @btn-clicked="publishHandler"
+        @updated="dataUpdatedHandler"
+        show-preview
+        show-save
+        :saving="saving" />
+      <div>
+      </div>
     </div>
 </template>
 
@@ -37,13 +42,23 @@ export default {
   data () {
     return {
       story: '',
+      storyId: 0,
       userStories: [],
       storyError: false,
       storyErrorType: 'warning',
       storyErrorMessage: '',
       serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE,
       storyObjects: [],
-      chapterTitle: ''
+      chapterTitle: '',
+      chapterId: 0,
+      lastUpdateDate: new Date(),
+      minTimeBetweenUpdates: 3000,
+      saving: false
+    }
+  },
+  watch: {
+    story: function () {
+      this.createChapter()
     }
   },
   created () {
@@ -65,7 +80,6 @@ export default {
       }
 
       data.forEach((story) => {
-        console.log(story.id)
         this.storyObjects.push(story)
         this.userStories.push(story.title)
       }, this)
@@ -80,6 +94,27 @@ export default {
   },
   methods: {
     saveChapter (editorData) {
+      let now = new Date()
+      if ((now - this.lastUpdateDate) < this.minTimeBetweenUpdates) return
+
+      this.saving = true
+      this.lastUpdateDate = now
+      console.log('Patching chapterId : ' + this.chapterId)
+      this.$http.patch(process.env.API_LOCATION + '/chapters/' + this.chapterId, {
+        storyId: this.storyId,
+        text: editorData,
+        title: this.chapterTitle,
+        update_date: new Date()
+      }).then(response => console.log(response))
+        .catch(error => console.log(error))
+        .finally(() => {
+          this.saving = false
+        })
+    },
+    publishHandler (editorData) {
+      console.log('publish button clicked')
+
+      /*
       if (editorData === '') {
         return this.setError('You need to write something')
       }
@@ -99,6 +134,16 @@ export default {
         storyId: this.getStoryId(this.story)
       }).then(response => this.saveSuccess(response))
         .catch(err => this.saveFailed(err))
+
+       */
+    },
+    dataUpdatedHandler (editorData) {
+      if (this.story === '') {
+        console.log('ignore data changed')
+      } else {
+        console.log('save the data')
+        this.saveChapter(editorData)
+      }
     },
     saveSuccess (response) {
       console.log(response)
@@ -130,6 +175,21 @@ export default {
           return el.id
         }
       }
+    },
+    createChapter () {
+      this.storyId = this.getStoryId(this.story)
+      console.log('Create a chapter for storyId : ' + this.storyId)
+
+      if (this.chapterId !== 0) {
+        return
+      }
+
+      this.$http.post(process.env.API_LOCATION + '/chapters', {
+        storyId: this.storyId
+      }).then(response => {
+        this.chapterId = response.data.id
+      })
+        .catch(error => console.log(error))
     }
   }
 }

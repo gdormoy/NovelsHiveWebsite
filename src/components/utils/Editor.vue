@@ -1,6 +1,20 @@
 <template>
   <div id="editor">
-    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @input="inputHandler"></ckeditor>
+
+    <div style="margin-left: 1%; margin-top: 1%; margin-bottom: 5%" v-if="showSave">
+      <span v-if="saving">
+        <v-progress-circular indeterminate></v-progress-circular>
+        Saving...
+      </span>
+      <span v-else>
+        <div v-if="firstSave">
+          <v-icon color="green">save</v-icon>
+          Saved !
+        </div>
+      </span>
+    </div>
+
     <v-btn
       @click="clickHandler"
       color="success"
@@ -22,7 +36,13 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
 export default {
   name: 'Editor',
-  props: ['btnText', 'showPreview'],
+  props: {
+    btnText: String,
+    showPreview: Boolean,
+    dataChanged: Function,
+    showSave: Boolean,
+    saving: Boolean
+  },
   data () {
     return {
       editor: ClassicEditor,
@@ -30,12 +50,17 @@ export default {
       editorConfig: {
         // The configuration of the editor.
       },
-      doesShowPreview: false
+      doesShowPreview: false,
+      firstSave: false
     }
   },
   methods: {
     clickHandler () {
       this.$emit('btn-clicked', this.editorData)
+    },
+    inputHandler () {
+      this.$emit('updated', this.editorData)
+      this.firstSave = true
     }
   }
 }
