@@ -127,7 +127,8 @@ export default {
         storyId: this.storyId,
         text: editorData,
         title: this.chapterTitle,
-        update_date: new Date()
+        update_date: new Date(),
+        id: this.chapterId
       }).then(response => console.log(response))
         .catch(error => console.log(error))
         .finally(() => {
