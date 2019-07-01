@@ -1,15 +1,17 @@
 <template>
   <div id="editor">
-    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @input="$emit('updated', editorData)"></ckeditor>
+    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @input="inputHandler"></ckeditor>
 
-    <div style="margin: 1%" v-if="showSave">
+    <div style="margin-left: 1%; margin-top: 1%; margin-bottom: 5%" v-if="showSave">
       <span v-if="saving">
         <v-progress-circular indeterminate></v-progress-circular>
         Saving...
       </span>
       <span v-else>
-        <v-icon color="green">save</v-icon>
-        Saved !
+        <div v-if="firstSave">
+          <v-icon color="green">save</v-icon>
+          Saved !
+        </div>
       </span>
     </div>
 
@@ -48,12 +50,17 @@ export default {
       editorConfig: {
         // The configuration of the editor.
       },
-      doesShowPreview: false
+      doesShowPreview: false,
+      firstSave: false
     }
   },
   methods: {
     clickHandler () {
       this.$emit('btn-clicked', this.editorData)
+    },
+    inputHandler () {
+      this.$emit('updated', this.editorData)
+      this.firstSave = true
     }
   }
 }
