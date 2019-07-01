@@ -116,7 +116,7 @@ export default {
           .finally(() => { this.$store.state.loader = false })
       }
     },
-    saveChapter () {
+    saveChapter (editorData) {
       let now = new Date()
       if ((now - this.lastUpdateDate) < this.minTimeBetweenUpdates) return
 
@@ -125,7 +125,7 @@ export default {
       console.log('Patching chapterId : ' + this.chapterId)
       this.$http.patch(process.env.API_LOCATION + '/chapters/' + this.chapterId, {
         storyId: this.storyId,
-        text: this.editorText,
+        text: editorData,
         title: this.chapterTitle,
         update_date: new Date()
       }).then(response => console.log(response))
@@ -160,12 +160,12 @@ export default {
 
        */
     },
-    dataUpdatedHandler () {
+    dataUpdatedHandler (editorData) {
       if (this.story === '') {
         console.log('ignore data changed')
       } else {
         console.log('save the data')
-        this.saveChapter()
+        this.saveChapter(editorData)
       }
     },
     saveSuccess (response) {

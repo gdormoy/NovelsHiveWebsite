@@ -45,11 +45,12 @@ export default {
     dataChanged: Function,
     showSave: Boolean,
     saving: Boolean,
-    editorData: String
+    initialText: String
   },
   data () {
     return {
       editor: ClassicEditor,
+      editorData: '',
       editorConfig: {
         // The configuration of the editor.
       },
@@ -57,12 +58,15 @@ export default {
       firstSave: false
     }
   },
+  mounted () {
+    this.editorData = this.initialText
+  },
   methods: {
     clickHandler () {
       this.$emit('btn-clicked', this.editorData)
     },
     inputHandler () {
-      this.$emit('updated')
+      this.$emit('updated', this.editorData)
       this.firstSave = true
     }
   }
