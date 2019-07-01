@@ -1,6 +1,6 @@
 <template>
   <div id="editor">
-    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @input="$emit('updated', editorData)"></ckeditor>
     <v-btn
       @click="clickHandler"
       color="success"
@@ -22,7 +22,11 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 
 export default {
   name: 'Editor',
-  props: ['btnText', 'showPreview'],
+  props: {
+    btnText: String,
+    showPreview: Boolean,
+    dataChanged: Function
+  },
   data () {
     return {
       editor: ClassicEditor,
