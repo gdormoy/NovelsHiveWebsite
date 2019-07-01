@@ -28,7 +28,7 @@
         @updated="dataUpdatedHandler"
         show-preview
         show-save
-        :editor-data="editorText"
+        :initial-text="editorText"
         :saving="saving" />
       <div>
       </div>

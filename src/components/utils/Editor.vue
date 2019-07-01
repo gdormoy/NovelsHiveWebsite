@@ -69,6 +69,11 @@ export default {
       this.$emit('updated', this.editorData)
       this.firstSave = true
     }
+  },
+  watch: {
+    initialText: function () {
+      this.editorData = this.initialText
+    }
   }
 }
 </script>
