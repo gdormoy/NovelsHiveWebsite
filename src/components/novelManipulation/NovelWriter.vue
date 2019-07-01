@@ -28,6 +28,7 @@
         @updated="dataUpdatedHandler"
         show-preview
         show-save
+        :editor-data="editorText"
         :saving="saving" />
       <div>
       </div>
@@ -53,7 +54,9 @@ export default {
       chapterId: 0,
       lastUpdateDate: new Date(),
       minTimeBetweenUpdates: 3000,
-      saving: false
+      saving: false,
+      updateStory: true,
+      editorText: 'Write a wonderful story here'
     }
   },
   watch: {
@@ -63,6 +66,8 @@ export default {
   },
   created () {
     this.$store.state.loader = true
+    this.chapterId = this.$route.params.id
+
     this.$http.get(process.env.API_LOCATION + '/users/' + localStorage.userId + '/stories', {
       headers: {
         'Authorization': localStorage.accessToken
@@ -83,17 +88,35 @@ export default {
         this.storyObjects.push(story)
         this.userStories.push(story.title)
       }, this)
+
+      if (this.chapterId !== undefined) {
+        this.getChapter()
+      } else {
+        this.$store.state.loader = false
+      }
     })
       .catch(err => {
         this.setError(this.serverDoesNotRespondErrorMessage)
         console.log(err)
-      })
-      .finally(() => {
         this.$store.state.loader = false
       })
   },
   methods: {
-    saveChapter (editorData) {
+    getChapter () {
+      if (this.chapterId !== undefined) {
+        this.$http.get(process.env.API_LOCATION + '/chapters/' + this.chapterId)
+          .then(response => {
+            console.log(response)
+            this.updateStory = false
+            this.story = this.getStoryTitle(response.data.storyId)
+            this.chapterTitle = response.data.title
+            this.editorText = Buffer.from(response.data.text).toString('utf-8')
+          })
+          .catch(error => console.log(error))
+          .finally(() => { this.$store.state.loader = false })
+      }
+    },
+    saveChapter () {
       let now = new Date()
       if ((now - this.lastUpdateDate) < this.minTimeBetweenUpdates) return
 
@@ -102,7 +125,7 @@ export default {
       console.log('Patching chapterId : ' + this.chapterId)
       this.$http.patch(process.env.API_LOCATION + '/chapters/' + this.chapterId, {
         storyId: this.storyId,
-        text: editorData,
+        text: this.editorText,
         title: this.chapterTitle,
         update_date: new Date()
       }).then(response => console.log(response))
@@ -111,7 +134,7 @@ export default {
           this.saving = false
         })
     },
-    publishHandler (editorData) {
+    publishHandler () {
       console.log('publish button clicked')
 
       /*
@@ -137,12 +160,12 @@ export default {
 
        */
     },
-    dataUpdatedHandler (editorData) {
+    dataUpdatedHandler () {
       if (this.story === '') {
         console.log('ignore data changed')
       } else {
         console.log('save the data')
-        this.saveChapter(editorData)
+        this.saveChapter()
       }
     },
     saveSuccess (response) {
@@ -176,11 +199,24 @@ export default {
         }
       }
     },
+    getStoryTitle (id) {
+      for (let counter = 0; counter < this.storyObjects.length; ++counter) {
+        let el = this.storyObjects[counter]
+        if (el.id === id) {
+          return el.title
+        }
+      }
+    },
     createChapter () {
+      if (!this.updateStory) {
+        this.updateStory = true
+        return
+      }
+
       this.storyId = this.getStoryId(this.story)
       console.log('Create a chapter for storyId : ' + this.storyId)
 
-      if (this.chapterId !== 0) {
+      if (this.chapterId !== undefined) {
         return
       }
 

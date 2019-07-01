@@ -41,6 +41,12 @@ const router = new Router({
       meta: { middleware: auth }
     },
     {
+      path: '/write/:id',
+      name: 'NovelWriter',
+      component: NovelWriter,
+      meta: { middleware: auth }
+    },
+    {
       path: '/create-story',
       name: 'createStory',
       component: StoryCreator,

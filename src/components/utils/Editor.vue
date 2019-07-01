@@ -1,6 +1,9 @@
 <template>
   <div id="editor">
-    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @input="inputHandler"></ckeditor>
+    <ckeditor :editor="editor"
+              v-model="editorData"
+              :config="editorConfig"
+              @input="inputHandler" ></ckeditor>
 
     <div style="margin-left: 1%; margin-top: 1%; margin-bottom: 5%" v-if="showSave">
       <span v-if="saving">
@@ -41,12 +44,12 @@ export default {
     showPreview: Boolean,
     dataChanged: Function,
     showSave: Boolean,
-    saving: Boolean
+    saving: Boolean,
+    editorData: String
   },
   data () {
     return {
       editor: ClassicEditor,
-      editorData: '<p>Content of the editor.</p>',
       editorConfig: {
         // The configuration of the editor.
       },
@@ -59,7 +62,7 @@ export default {
       this.$emit('btn-clicked', this.editorData)
     },
     inputHandler () {
-      this.$emit('updated', this.editorData)
+      this.$emit('updated')
       this.firstSave = true
     }
   }
