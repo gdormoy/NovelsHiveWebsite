@@ -1,6 +1,18 @@
 <template>
   <div id="editor">
     <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" @input="$emit('updated', editorData)"></ckeditor>
+
+    <div style="margin: 1%" v-if="showSave">
+      <span v-if="saving">
+        <v-progress-circular indeterminate></v-progress-circular>
+        Saving...
+      </span>
+      <span v-else>
+        <v-icon color="green">save</v-icon>
+        Saved !
+      </span>
+    </div>
+
     <v-btn
       @click="clickHandler"
       color="success"
@@ -25,7 +37,9 @@ export default {
   props: {
     btnText: String,
     showPreview: Boolean,
-    dataChanged: Function
+    dataChanged: Function,
+    showSave: Boolean,
+    saving: Boolean
   },
   data () {
     return {

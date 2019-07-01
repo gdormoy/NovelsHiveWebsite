@@ -26,7 +26,11 @@
         btn-text="Save"
         @btn-clicked="publishHandler"
         @updated="dataUpdatedHandler"
-        show-preview />
+        show-preview
+        show-save
+        :saving="saving" />
+      <div>
+      </div>
     </div>
 </template>
 
@@ -48,7 +52,8 @@ export default {
       chapterTitle: '',
       chapterId: 0,
       lastUpdateDate: new Date(),
-      minTimeBetweenUpdates: 3000
+      minTimeBetweenUpdates: 3000,
+      saving: false
     }
   },
   watch: {
@@ -92,6 +97,7 @@ export default {
       let now = new Date()
       if ((now - this.lastUpdateDate) < this.minTimeBetweenUpdates) return
 
+      this.saving = true
       this.lastUpdateDate = now
       console.log('Patching chapterId : ' + this.chapterId)
       this.$http.patch(process.env.API_LOCATION + '/chapters/' + this.chapterId, {
@@ -101,6 +107,9 @@ export default {
         update_date: new Date()
       }).then(response => console.log(response))
         .catch(error => console.log(error))
+        .finally(() => {
+          this.saving = false
+        })
     },
     publishHandler (editorData) {
       console.log('publish button clicked')
