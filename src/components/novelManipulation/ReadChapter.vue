@@ -18,33 +18,17 @@
       :next-chapter-id="nextChapterId"
       style="margin-bottom: 5%;"
     ></chapter-navigation>
-
-    <!--
-    <v-btn
-        flat
-        :disabled="previousChapterId === null"
-        style="position: absolute; left: 20%;"
-        @click="gotoChapter(previousChapterId)">
-      <v-icon>$vuetify.icons.prev</v-icon>
-      Previous
-    </v-btn>
-    <v-btn
-        flat
-        :disabled="nextChapterId === null"
-        style="position: absolute; right: 20%;"
-        @click="gotoChapter(nextChapterId)">
-      Next <v-icon>$vuetify.icons.next</v-icon>
-    </v-btn>
--->
+    <chapter-commentaries></chapter-commentaries>
   </div>
 </template>
 
 <script>
 import ChapterNavigation from '../novelPresentation/ChapterNavigation'
+import ChapterCommentaries from '../commentaries/ChapterCommentaries'
 
 export default {
   name: 'ReadChapter',
-  components: {ChapterNavigation},
+  components: {ChapterNavigation, ChapterCommentaries},
   data () {
     return {
       storyTitle: '',
