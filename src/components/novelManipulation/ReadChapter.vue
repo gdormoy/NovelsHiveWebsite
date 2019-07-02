@@ -18,7 +18,7 @@
       :next-chapter-id="nextChapterId"
       style="margin-bottom: 7%;"
     ></chapter-navigation>
-    <chapter-commentaries></chapter-commentaries>
+    <chapter-commentaries :chapter-id="$route.params.id"></chapter-commentaries>
   </div>
 </template>
 

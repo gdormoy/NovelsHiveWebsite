@@ -1,5 +1,15 @@
 <template>
   <div>
+    <v-textarea
+      v-model="writedComment"
+      label="Give a comment"
+      auto-grow
+      box
+      clearable
+      append-icon="send"
+      @click:append="sendComment"
+    ></v-textarea>
+
     <div :key="commentary.id" v-for="commentary in commentaries">
       <commentary :commentary="commentary"></commentary>
     </div>
@@ -13,26 +23,46 @@ import Moment from 'moment'
 export default {
   name: 'ChapterCommentaries',
   components: {Commentary},
+  props: {
+    chapterId: String
+  },
   data () {
     return {
-      commentaries: []
+      commentaries: [],
+      writedComment: ''
     }
   },
   created () {
-    console.log('Get commentaries')
-    this.$http.get(process.env.API_LOCATION + '/chapters/' + this.$route.params.id + '/publishedCommentaries')
-      .then(response => {
-        console.log(response)
-        let commentaries = response.data.commentaries
+    this.getComments()
+  },
+  methods: {
+    getComments () {
+      this.$http.get(process.env.API_LOCATION + '/chapters/' + this.$route.params.id + '/publishedCommentaries')
+        .then(response => {
+          let commentaries = response.data.commentaries
 
-        for (let counter = 0; counter < commentaries.length; ++counter) {
-          commentaries[counter].text = Buffer.from(commentaries[counter].text).toString('utf-8')
-          commentaries[counter].publication_date = Moment(commentaries[counter].publication_date).format('lll')
-        }
+          for (let counter = 0; counter < commentaries.length; ++counter) {
+            commentaries[counter].text = Buffer.from(commentaries[counter].text).toString('utf-8')
+            commentaries[counter].publication_date = Moment(commentaries[counter].publication_date).format('lll')
+          }
 
-        this.commentaries = commentaries
+          this.commentaries = commentaries
+        })
+        .catch(error => console.log(error))
+    },
+    sendComment () {
+      if (this.writedComment === '') return
+      console.log('Send commentary')
+
+      this.$http.post(process.env.API_LOCATION + '/published_commentaries', {
+        text: this.writedComment,
+        publication_date: new Date(),
+        userId: localStorage.userId,
+        storyChapterId: this.chapterId
       })
-      .catch(error => console.log(error))
+        .then(() => this.getComments())
+        .catch(error => console.log(error))
+    }
   }
 }
 </script>
