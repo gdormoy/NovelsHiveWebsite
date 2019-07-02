@@ -10,6 +10,7 @@ import StoryCreator from '../components/novelManipulation/StoryCreator'
 import Account from '../components/accounts/Account'
 import MyStories from '../components/novelPresentation/MyStories'
 import SearchStory from '../components/novelPresentation/SearchStory'
+import StoryPresentation from '../components/novelPresentation/StoryPresentation'
 
 Vue.use(Router)
 
@@ -68,6 +69,12 @@ const router = new Router({
       path: '/search',
       name: 'Search',
       component: SearchStory,
+      meta: { middleware: auth }
+    },
+    {
+      path: '/story/:id',
+      name: 'StoryPresentation',
+      component: StoryPresentation,
       meta: { middleware: auth }
     }
   ],
