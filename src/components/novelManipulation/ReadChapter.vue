@@ -16,7 +16,7 @@
     <chapter-navigation
       :previous-chapter-id="previousChapterId"
       :next-chapter-id="nextChapterId"
-      style="margin-bottom: 10%;"
+      style="margin-bottom: 7%;"
     ></chapter-navigation>
     <chapter-commentaries></chapter-commentaries>
   </div>
