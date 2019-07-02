@@ -11,8 +11,13 @@
       :loading="sendingComment"
     ></v-textarea>
 
-    <div :key="commentary.id" v-for="commentary in commentaries">
-      <commentary :commentary="commentary"></commentary>
+    <div v-if="commentaries.length !== 0">
+      <div :key="commentary.id" v-for="commentary in commentaries">
+        <commentary :commentary="commentary"></commentary>
+      </div>
+    </div>
+    <div v-else>
+      <p>Be the first to leave a comment on this chapter :)</p>
     </div>
   </div>
 </template>
