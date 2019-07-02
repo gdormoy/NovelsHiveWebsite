@@ -18,7 +18,7 @@
       :next-chapter-id="nextChapterId"
       style="margin-bottom: 7%;"
     ></chapter-navigation>
-    <chapter-commentaries :chapter-id="$route.params.id"></chapter-commentaries>
+    <chapter-commentaries :chapter-id="chapterId"></chapter-commentaries>
   </div>
 </template>
 
@@ -35,17 +35,19 @@ export default {
       chapterTitle: '',
       chapterData: '',
       previousChapterId: null,
-      nextChapterId: null
+      nextChapterId: null,
+      chapterId: 0
     }
   },
   created () {
+    this.chapterId = this.$route.params.id.toString()
     this.loadData()
   },
   methods: {
     loadData () {
       this.$store.state.loader = true
 
-      this.$http.get(process.env.API_LOCATION + '/chapters/' + this.$route.params.id + '/read', {
+      this.$http.get(process.env.API_LOCATION + '/chapters/' + this.chapterId + '/read', {
         headers: {
           'Authorization': localStorage.accessToken
         }
