@@ -5,6 +5,7 @@
       <li v-for="story in stories" v-bind:key="story.id" class="story">
         <div><h1>{{story.title}}</h1></div>
         <story-icon :story="story"></story-icon>
+        <div>{{story.writer}}</div>
       </li>
     </ul>
   </div>
@@ -32,8 +33,10 @@ export default {
       this.$data.stories.forEach(function (story) {
         story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
       })
-      console.log(this.$data.stories)
-    }).catch(error => this.getUserFailed(error))
+      this.$data.stories.sort(function IHaveAName (a, b) {
+        return b.title < a.title ? 1 : b.title > a.title ? -1 : 0
+      })
+    })
   }
 }
 </script>
