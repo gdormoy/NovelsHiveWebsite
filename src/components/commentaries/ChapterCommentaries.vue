@@ -8,6 +8,7 @@
       clearable
       append-icon="send"
       @click:append="sendComment"
+      :loading="sendingComment"
     ></v-textarea>
 
     <div :key="commentary.id" v-for="commentary in commentaries">
@@ -29,7 +30,8 @@ export default {
   data () {
     return {
       commentaries: [],
-      writedComment: ''
+      writedComment: '',
+      sendingComment: false
     }
   },
   created () {
@@ -52,8 +54,8 @@ export default {
     },
     sendComment () {
       if (this.writedComment === '') return
-      console.log('Send commentary')
 
+      this.sendingComment = true
       this.$http.post(process.env.API_LOCATION + '/published_commentaries', {
         text: this.writedComment,
         publication_date: new Date(),
@@ -62,6 +64,7 @@ export default {
       })
         .then(() => this.getComments())
         .catch(error => console.log(error))
+        .finally(() => { this.sendingComment = false })
     }
   }
 }
