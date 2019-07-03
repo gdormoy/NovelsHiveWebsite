@@ -1,6 +1,7 @@
 <template>
   <div id="story" style="margin-left: auto; margin-right: auto; width: 80%; text-justify: auto;">
     <h1 style="text-decoration: underline">{{story.title}}</h1>
+    <p style="margin-top: 3%;"><strong>Author:</strong> {{story.user.username}}</p>
     <p style="margin-bottom: 7%; margin-top: 3%;"><strong>Synopsis : </strong>{{story.synopsis}}</p>
 
     <div id="chapters" v-for="chapter in story.storyChapters" :key="chapter.id" style="margin-bottom: 1%">
