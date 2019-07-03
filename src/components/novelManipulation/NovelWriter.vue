@@ -23,11 +23,11 @@
         required></v-text-field>
 
       <editor
-        btn-text="Save"
-        @btn-clicked="publishHandler"
+        @publish="publishHandler"
         @updated="dataUpdatedHandler"
+        @save-as-draft="saveAsDraft"
         show-preview
-        show-save
+        show-save-status
         :initial-text="editorText"
         :saving="saving" />
       <div>
@@ -37,6 +37,7 @@
 
 <script>
 import Editor from '../utils/Editor'
+
 export default {
   name: 'NovelWriter',
   components: {Editor},
@@ -106,39 +107,48 @@ export default {
       if (this.chapterId !== undefined) {
         this.$http.get(process.env.API_LOCATION + '/chapters/' + this.chapterId)
           .then(response => {
-            console.log(response)
             this.updateStory = false
             this.story = this.getStoryTitle(response.data.storyId)
             this.chapterTitle = response.data.title
             this.editorText = Buffer.from(response.data.text).toString('utf-8')
+            this.storyId = response.data.storyId
           })
           .catch(error => console.log(error))
           .finally(() => { this.$store.state.loader = false })
       }
     },
-    saveChapter (editorData) {
+    saveChapter (options, successHandler, failureHandler) {
       let now = new Date()
       if ((now - this.lastUpdateDate) < this.minTimeBetweenUpdates) return
+      if (this.storyId === undefined || this.storyId === 0) return
 
       this.saving = true
       this.lastUpdateDate = now
-      console.log('Patching chapterId : ' + this.chapterId)
-      this.$http.patch(process.env.API_LOCATION + '/chapters/' + this.chapterId, {
+
+      if (options === undefined) options = {}
+      Object.assign(options, {
         storyId: this.storyId,
-        text: editorData,
         title: this.chapterTitle,
-        update_date: new Date(),
+        update_date: now,
         id: this.chapterId
-      }).then(response => console.log(response))
-        .catch(error => console.log(error))
+      })
+
+      if (successHandler === undefined) {
+        successHandler = () => console.log('Chapter has been patched')
+      }
+
+      if (failureHandler === undefined) {
+        failureHandler = (error) => console.log(error)
+      }
+
+      this.$http.patch(process.env.API_LOCATION + '/chapters/' + this.chapterId, options)
+        .then(successHandler)
+        .catch(failureHandler)
         .finally(() => {
           this.saving = false
         })
     },
-    publishHandler () {
-      console.log('publish button clicked')
-
-      /*
+    publishHandler (editorData) {
       if (editorData === '') {
         return this.setError('You need to write something')
       }
@@ -149,29 +159,12 @@ export default {
         return this.setError('A chapter need a title')
       }
 
-      console.log(this.getStoryId(this.story))
-
-      this.$http.post(process.env.API_LOCATION + '/chapters', {
+      this.saveChapter({
         text: editorData,
-        update_date: new Date(),
-        title: this.chapterTitle,
-        storyId: this.getStoryId(this.story)
-      }).then(response => this.saveSuccess(response))
-        .catch(err => this.saveFailed(err))
-
-       */
-    },
-    dataUpdatedHandler (editorData) {
-      if (this.story === '') {
-        console.log('ignore data changed')
-      } else {
-        console.log('save the data')
-        this.saveChapter(editorData)
-      }
+        online: true
+      }, this.saveSuccess, this.saveFailed)
     },
     saveSuccess (response) {
-      console.log(response)
-
       if (response.status !== 200) {
         return this.saveFailed(null)
       }
@@ -183,6 +176,17 @@ export default {
         return this.setError(this.serverDoesNotRespondErrorMessage)
       }
       console.log(error)
+    },
+    saveAsDraft (editorData) {
+      this.saveChapter({
+        text: editorData,
+        online: false
+      })
+    },
+    dataUpdatedHandler (editorData) {
+      if (this.story !== '') {
+        this.saveChapter({ text: editorData })
+      }
     },
     setError (errorMessage) {
       this.storyError = true
@@ -215,8 +219,6 @@ export default {
       }
 
       this.storyId = this.getStoryId(this.story)
-      console.log('Create a chapter for storyId : ' + this.storyId)
-
       if (this.chapterId !== undefined) {
         return
       }

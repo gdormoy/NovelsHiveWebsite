@@ -5,7 +5,7 @@
               :config="editorConfig"
               @input="inputHandler" ></ckeditor>
 
-    <div style="margin-left: 1%; margin-top: 1%; margin-bottom: 5%" v-if="showSave">
+    <div style="margin-left: 1%; margin-top: 1%; margin-bottom: 5%" v-if="showSaveStatus">
       <span v-if="saving">
         <v-progress-circular indeterminate></v-progress-circular>
         Saving...
@@ -18,13 +18,20 @@
       </span>
     </div>
 
-    <v-btn
-      @click="clickHandler"
-      color="success"
-      style="position: absolute; right: 5%;"
-    >
-      {{btnText}}
-    </v-btn>
+    <div style="position: absolute; right: 5%;">
+      <v-btn
+        @click="saveDraftHandler"
+        color="blue-grey lighten-3"
+      >
+        Save as draft
+      </v-btn>
+      <v-btn
+        @click="publishHandler"
+        color="success"
+      >
+        Publish
+      </v-btn>
+    </div>
     <v-checkbox v-if="showPreview" v-model="doesShowPreview" label="Show a preview"></v-checkbox>
 
     <div v-if="doesShowPreview">
@@ -40,10 +47,9 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 export default {
   name: 'Editor',
   props: {
-    btnText: String,
     showPreview: Boolean,
     dataChanged: Function,
-    showSave: Boolean,
+    showSaveStatus: Boolean,
     saving: Boolean,
     initialText: String
   },
@@ -62,12 +68,15 @@ export default {
     this.editorData = this.initialText
   },
   methods: {
-    clickHandler () {
-      this.$emit('btn-clicked', this.editorData)
+    publishHandler () {
+      this.$emit('publish', this.editorData)
     },
     inputHandler () {
       this.$emit('updated', this.editorData)
       this.firstSave = true
+    },
+    saveDraftHandler () {
+      this.$emit('save-as-draft', this.editorData)
     }
   },
   watch: {
