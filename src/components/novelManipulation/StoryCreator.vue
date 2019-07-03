@@ -23,6 +23,16 @@
         :rules="titleRules"
         required></v-text-field>
 
+      <v-select
+        v-model="kind"
+        :items="kinds"
+        label="Kind"
+        :rules="kindRules"
+        required
+        menu-props="auto"
+        @change="getKindIdByName"
+        attach></v-select>
+
       <v-textarea
         auto-grow
         v-model="synopsis"
@@ -50,18 +60,38 @@ export default {
       titleRules: [
         v => !!v || 'Every great story has a name !'
       ],
+      kindRules: [
+        v => !!v || 'What is the kind of your story ?'
+      ],
       synopsis: '',
       synopsisRules: [
         v => !!v || 'Let your reader know the purpose of your story'
       ],
       serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE,
       creationError: false,
-      creationErrorMessage: ''
+      creationErrorMessage: '',
+      kind: '',
+      kinds: [],
+      kindsObject: [],
+      kindId: 0
     }
+  },
+  created () {
+    this.$http.get(process.env.API_LOCATION + '/kinds')
+      .then((response) => {
+        console.log(response)
+        this.kindsObject = response.data
+
+        response.data.forEach((kind) => {
+          this.kinds.push(kind.name)
+        })
+      })
+      .catch((error) => console.log(error))
   },
   methods: {
     createStory () {
-      if ((this.title === null || this.title === '') || (this.synopsis === null || this.synopsis === '')) {
+      if ((this.title === undefined || this.title === '') || (this.synopsis === undefined || this.synopsis === '') ||
+          (this.kindId === undefined || this.kindId === '')) {
         this.formIsValid = false
         return
       }
@@ -73,8 +103,11 @@ export default {
         'synopsis': this.synopsis,
         'publication_date': now,
         'update_date': now,
-        'userId': localStorage.userId
+        'userId': localStorage.userId,
+        'storyKindId': this.kindId // this.getKindIdByName(this.kind)
       }
+
+      console.log(requestBody)
 
       this.$http.post(process.env.API_LOCATION + '/stories', requestBody)
         .then(response => this.createSuccessful(response))
@@ -96,6 +129,14 @@ export default {
     },
     createSuccessful (response) {
       this.$router.push('/') // Where to redirect ?
+    },
+    getKindIdByName () {
+      this.kindsObject.forEach((kind) => {
+        if (kind.name === this.kind) {
+          console.log(kind.id)
+          this.kindId = kind.id
+        }
+      })
     }
   }
 }
