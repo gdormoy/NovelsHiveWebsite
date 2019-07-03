@@ -3,6 +3,7 @@
     <ckeditor :editor="editor"
               v-model="editorData"
               :config="editorConfig"
+              @ready="prefill"
               @input="inputHandler" ></ckeditor>
 
     <div style="margin-left: 1%; margin-top: 1%; margin-bottom: 5%" v-if="showSaveStatus">
@@ -64,9 +65,6 @@ export default {
       firstSave: false
     }
   },
-  mounted () {
-    this.editorData = this.initialText
-  },
   methods: {
     publishHandler () {
       this.$emit('publish', this.editorData)
@@ -77,6 +75,9 @@ export default {
     },
     saveDraftHandler () {
       this.$emit('save-as-draft', this.editorData)
+    },
+    prefill () {
+      this.editorData = this.initialText
     }
   },
   watch: {
