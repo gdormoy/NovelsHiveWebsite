@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div id="favorit">
-      <v-icon v-if="favorit" large color="yellow darken-2" @click="setFavorit">star outline</v-icon>
-      <v-icon v-else large color="darken-2" @click="setFavorit">star outline</v-icon>
+    <div id="favorite">
+      <v-icon v-if="favorite" large color="yellow darken-2" @click="setFavorite">star outline</v-icon>
+      <v-icon v-else large color="darken-2" @click="setFavorite">star outline</v-icon>
     </div>
     <div id="story" style="margin-left: auto; margin-right: auto; width: 80%; text-justify: auto;">
       <h1 style="text-decoration: underline">{{story.title}}</h1>
@@ -26,8 +26,8 @@ export default {
     return {
       story: {},
       maxChapter: 0,
-      favorit: false,
-      favoritId: ''
+      favorite: false,
+      favoriteId: ''
     }
   },
   created () {
@@ -59,16 +59,16 @@ export default {
       }
     })
       .then(response => {
-        this.favoritId = response.data.id
-        if (this.favoritId !== '') {
-          this.favorit = true
+        this.favoriteId = response.data.id
+        if (this.favoriteId !== '') {
+          this.favorite = true
         }
       })
   },
   methods: {
-    setFavorit () {
+    setFavorite () {
       let id = this.$route.params.id
-      if (!this.favorit) {
+      if (!this.favorite) {
         this.$http.post(process.env.API_LOCATION + '/stories/' + id + '/favorites', {
           headers: {
             'X-Access-Token': localStorage.accessToken
@@ -77,7 +77,7 @@ export default {
           'storyId': id
         })
       } else {
-        this.$http.delete(process.env.API_LOCATION + '/favorites/' + this.favoritId, {
+        this.$http.delete(process.env.API_LOCATION + '/favorites/' + this.favoriteId, {
           headers: {
             'X-Access-Token': localStorage.accessToken
           },
@@ -85,14 +85,14 @@ export default {
           'storyId': id
         })
       }
-      this.favorit = !this.favorit
+      this.favorite = !this.favorite
     }
   }
 }
 </script>
 
 <style scoped>
-  #favorit{
+  #favorite{
     margin-right: -10%;
     float: right;
   }
