@@ -4,9 +4,10 @@
     <p><strong>Synopsis : </strong>{{story.synopsis}}</p>
 
     <div v-for="chapter in story.storyChapters" :key="chapter.id">
-      <router-link :to="{ name: 'read', params: { id: chapter.id } }">
+      <router-link :to="{ name: 'read', params: { id: chapter.id } }" v-if="chapter.online">
         {{chapter.number}}/{{maxChapter}} : {{chapter.title}}
       </router-link>
+      <p v-else>{{chapter.number}}/{{maxChapter}} : {{chapter.title}}</p>
     </div>
   </div>
 </template>
