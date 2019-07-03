@@ -78,7 +78,7 @@ export default {
     gotoReading (storyId, chapterId) {
       console.log('push storyid = ' + storyId + '; chapterId = ' + chapterId)
 
-      this.$router.push('/read/' + chapterId)
+      this.$router.push('/story/' + storyId)
     }
   }
 }
