@@ -3,7 +3,7 @@
     <div id="app">
       <navigation-drawer />
       <toolbar />
-      <v-content style="margin-top: -5%;">
+      <v-content style="width: 90%; margin-left: auto; margin-right: auto; margin-top: -5%;" >
         <v-container fluid fill-height>
           <v-layout justify-center column>
             <v-flex shrink>
