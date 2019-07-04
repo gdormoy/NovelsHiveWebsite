@@ -2,21 +2,35 @@
   <div id="storySearcher">
     <h1>What do you want to read ?</h1>
 
-    <v-text-field
-      v-model="storyName"
-      placeholder="Story name"
-      prepend-inner-icon="search"
-      clearable
-      @input="searchParamsChanged"
-    ></v-text-field>
+    <div id="filter">
+      <v-text-field
+        v-model="storyName"
+        placeholder="Story name"
+        prepend-inner-icon="search"
+        clearable
+        @input="searchParamsChanged"
+      ></v-text-field>
 
-    <v-select
-      v-model="kind"
-      :items="kinds"
-      label="Kind"
-      menu-props="auto"
-      @change="searchParamsChanged"
-      attach></v-select>
+      <v-select
+        v-model="kind"
+        :items="kinds"
+        label="Kind"
+        menu-props="auto"
+        @change="searchParamsChanged"
+        attach></v-select>
+
+      <v-tabs
+        v-model="favorite"
+        @change="searchParamsChanged"
+      >
+        <v-tab
+          v-for="(favLabel, index) in favorites"
+          :key="index"
+        >
+          {{favLabel}}
+        </v-tab>
+      </v-tabs>
+    </div>
 
     <v-list three-line>
       <template v-for="story in stories">
@@ -47,7 +61,9 @@ export default {
       kind: '',
       kinds: [],
       kindsObject: [{name: 'All kinds', id: 0}],
-      kindId: 0
+      kindId: 0,
+      favorite: 0,
+      favorites: ['All', 'Favorites', 'Non favorites']
     }
   },
   created () {
@@ -120,10 +136,19 @@ export default {
 
       this.$http.get(process.env.API_LOCATION + '/stories', requestParam)
         .then(response => {
-          this.stories = response.data
+          this.stories = []
+          // this.stories = response.data
 
-          this.stories.forEach((story) => {
+          // this.stories.forEach((story) => {
+          response.data.forEach((story) => {
             story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
+
+            if ((this.favorite === 1 && story.favorites[0] === undefined) ||
+                (this.favorite === 2 && story.favorites[0] !== undefined)) {
+              return
+            }
+
+            this.stories.push(story)
           })
         })
         .catch(error => console.log(error))
