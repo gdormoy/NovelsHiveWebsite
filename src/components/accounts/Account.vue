@@ -259,14 +259,14 @@ export default {
         .catch(error => (this.getUserFailed(error)))
     },
     deleteUser () {
-    //   this.$http.delete(process.env.API_LOCATION + '/users/' + localStorage.userId, {
-    //     headers: {
-    //       'X-Access-Token': localStorage.accessToken
-    //     }
-    //   })
-    //     .then(response => (console.log(response)))
-    // }
+      // this.$http.delete(process.env.API_LOCATION + '/users/' + localStorage.userId, {
+      //   headers: {
+      //     'X-Access-Token': localStorage.accessToken
+      //   }
+      // })
+      //   .then(response => (console.log(response)))
       console.log('under construction')
+    }
   }
 }
 </script>
