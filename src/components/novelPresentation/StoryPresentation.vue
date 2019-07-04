@@ -1,8 +1,8 @@
 <template>
   <div>
     <div id="favorite">
-      <v-icon v-if="favorite" large color="yellow darken-2" @click="setFavorite">star outline</v-icon>
-      <v-icon v-else large color="darken-2" @click="setFavorite">star outline</v-icon>
+      <v-icon v-if="favorite" large color="yellow darken-2" @click="deleteFavorite">star outline</v-icon>
+      <v-icon v-else large color="darken-2" @click="addFavorite">star outline</v-icon>
     </div>
     <div id="story" style="margin-left: auto; margin-right: auto; width: 80%; text-justify: auto;">
       <h1 style="text-decoration: underline">{{story.title}}</h1>
@@ -69,25 +69,29 @@ export default {
       })
   },
   methods: {
-    setFavorite () {
+    addFavorite () {
       let id = this.$route.params.id
-      if (!this.favorite) {
-        this.$http.post(process.env.API_LOCATION + '/stories/' + id + '/favorites', {
-          headers: {
-            'X-Access-Token': localStorage.accessToken
-          },
-          'userId': localStorage.userId,
-          'storyId': id
-        })
-      } else {
-        this.$http.delete(process.env.API_LOCATION + '/favorites/' + this.favoriteId, {
-          headers: {
-            'X-Access-Token': localStorage.accessToken
-          },
-          'userId': localStorage.userId,
-          'storyId': id
-        })
-      }
+      this.$http.post(process.env.API_LOCATION + '/stories/' + id + '/favorites', {
+        headers: {
+          'X-Access-Token': localStorage.accessToken
+        },
+        'userId': localStorage.userId,
+        'storyId': id
+      })
+        .then(res => (this.favoriteId = res.data.id))
+      this.favorite = !this.favorite
+    },
+    deleteFavorite () {
+      let id = this.$route.params.id
+      this.$http.delete(process.env.API_LOCATION + '/favorites/' + this.favoriteId, {
+        headers: {
+          'X-Access-Token': localStorage.accessToken
+        },
+        'userId': localStorage.userId,
+        'storyId': id
+      })
+        .then(res => (console.log(res)))
+      this.favoriteId = ''
       this.favorite = !this.favorite
     }
   }
