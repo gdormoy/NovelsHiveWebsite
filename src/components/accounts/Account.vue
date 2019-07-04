@@ -100,6 +100,14 @@
       Send Informations
       <v-icon right dark>email</v-icon>
     </v-btn>
+    <v-btn
+      color="red"
+      class="white--text"
+      @click="deleteUser"
+    >
+      Delete
+      <v-icon right dark>delete</v-icon>
+    </v-btn>
   </div>
 </template>
 
@@ -249,7 +257,16 @@ export default {
       })
         .then(response => (console.log(response)))
         .catch(error => (this.getUserFailed(error)))
-    }
+    },
+    deleteUser () {
+    //   this.$http.delete(process.env.API_LOCATION + '/users/' + localStorage.userId, {
+    //     headers: {
+    //       'X-Access-Token': localStorage.accessToken
+    //     }
+    //   })
+    //     .then(response => (console.log(response)))
+    // }
+      console.log('under construction')
   }
 }
 </script>
