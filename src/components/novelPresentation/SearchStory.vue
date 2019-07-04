@@ -24,7 +24,10 @@
           :key="story.id"
           @click="gotoReading(story.id)">
           <v-list-tile-content>
-            <v-list-tile-title>{{story.title}}</v-list-tile-title>
+            <v-list-tile-title>
+              {{story.title}}
+              <v-icon v-if="story.favorites[0] !== undefined" color="yellow darken-2" size="18">star</v-icon>
+            </v-list-tile-title>
             <v-list-tile-sub-title>{{story.synopsis}}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -53,8 +56,6 @@ export default {
 
     this.$http.get(process.env.API_LOCATION + '/kinds')
       .then((response) => {
-        // Object.assign(this.kindsObject, response.data)
-        // this.kindsObject = response.data
         this.kinds.push(this.kindsObject[0].name)
         this.kind = this.kindsObject[0].name
 
@@ -62,8 +63,6 @@ export default {
           this.kinds.push(kind.name)
           this.kindsObject.push(kind)
         })
-
-        console.log(this.kindsObject)
       })
       .catch((error) => console.log(error))
   },
@@ -100,12 +99,22 @@ export default {
       let filterParam = {
         params: {
           'filter': {
+            'include': {
+              'relation': 'favorites',
+              'scope': {
+                'where': {
+                  'userId': localStorage.userId
+                }
+              }
+            },
             'where': {'and': whereArray},
             'limit': 20,
             'skip': 0
           }
         }
       }
+
+      console.log(JSON.stringify(filterParam.params))
 
       Object.assign(requestParam, filterParam)
 
