@@ -1,11 +1,13 @@
 <template>
   <div>
-    <div id="favorite">
-      <v-icon v-if="favoriteId !== undefined" large color="yellow darken-2" @click="deleteFavorite">star outline</v-icon>
-      <v-icon v-else large color="darken-2" @click="addFavorite">star outline</v-icon>
-    </div>
     <div id="story" style="margin-left: auto; margin-right: auto; width: 80%; text-justify: auto;">
-      <h1 style="text-decoration: underline">{{story.title}}</h1>
+      <h1>
+        <span style="text-decoration: underline">{{story.title}}</span>
+        <div style="float: right;">
+          <v-icon v-if="favoriteId !== undefined" large color="yellow darken-2" @click="deleteFavorite">star</v-icon>
+          <v-icon v-else large color="darken-2" @click="addFavorite">star</v-icon>
+        </div>
+      </h1>
       <p style="margin-top: 3%;"><strong>Author : </strong>{{authorUsername}}</p>
       <p style="margin-top: 3%;"><strong>Kind : </strong>{{storyKind}}</p>
       <p style="margin-bottom: 7%; margin-top: 3%;"><strong>Synopsis : </strong>{{story.synopsis}}</p>
@@ -14,7 +16,7 @@
         <router-link :to="{ name: 'read', params: { id: chapter.id } }" v-if="chapter.online" tag="h3">
           {{chapter.number}}. {{chapter.title}}
         </router-link>
-        <h3 v-else><!--{{chapter.number}}/{{maxChapter}} : -->{{chapter.title}}</h3>
+        <h3 v-else>{{chapter.title}}</h3>
       </div>
     </div>
   </div>
@@ -85,11 +87,6 @@ export default {
 </script>
 
 <style scoped>
-  #favorite{
-    margin-right: -10%;
-    float: right;
-  }
-
   #chapters:hover {
     cursor: pointer;
     color: grey;
