@@ -29,15 +29,21 @@ export default {
       maxChapter: 0,
       storyKind: '',
       favorite: false,
-      favoriteId: ''
+      favoriteId: '',
+      authorUsername: ''
     }
   },
   created () {
     this.$store.state.loader = true
 
     let id = this.$route.params.id
-    this.$http.get(process.env.API_LOCATION + '/stories/' + id + '/chapters')
+    this.$http.get(process.env.API_LOCATION + '/stories/' + id + '/chapters', {
+      params: {
+        'userId': localStorage.userId
+      }
+    })
       .then(response => {
+        console.log(response)
         let story = response.data.story
         story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
         this.story = story
