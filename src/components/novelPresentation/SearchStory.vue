@@ -43,20 +43,27 @@ export default {
       stories: [],
       kind: '',
       kinds: [],
-      kindsObject: [],
+      kindsObject: [{name: 'All kinds', id: 0}],
       kindId: 0
     }
   },
   created () {
     this.loadStories()
+    console.log(this.kindsObject)
 
     this.$http.get(process.env.API_LOCATION + '/kinds')
       .then((response) => {
-        this.kindsObject = response.data
+        // Object.assign(this.kindsObject, response.data)
+        // this.kindsObject = response.data
+        this.kinds.push(this.kindsObject[0].name)
+        this.kind = this.kindsObject[0].name
 
         response.data.forEach((kind) => {
           this.kinds.push(kind.name)
+          this.kindsObject.push(kind)
         })
+
+        console.log(this.kindsObject)
       })
       .catch((error) => console.log(error))
   },
