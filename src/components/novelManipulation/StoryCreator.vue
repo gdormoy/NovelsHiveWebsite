@@ -104,7 +104,7 @@ export default {
         'publication_date': now,
         'update_date': now,
         'userId': localStorage.userId,
-        'storyKindId': this.kindId // this.getKindIdByName(this.kind)
+        'storyKindId': this.kindId
       }
 
       console.log(requestBody)

@@ -7,14 +7,22 @@
       placeholder="Story name"
       prepend-inner-icon="search"
       clearable
-      @input="storyNameChanged()"
+      @input="searchParamsChanged"
     ></v-text-field>
+
+    <v-select
+      v-model="kind"
+      :items="kinds"
+      label="Kind"
+      menu-props="auto"
+      @change="searchParamsChanged"
+      attach></v-select>
 
     <v-list three-line>
       <template v-for="story in stories">
         <v-list-tile
           :key="story.id"
-          @click="gotoReading(story.id, story.firstChapterId)">
+          @click="gotoReading(story.id)">
           <v-list-tile-content>
             <v-list-tile-title>{{story.title}}</v-list-tile-title>
             <v-list-tile-sub-title>{{story.synopsis}}</v-list-tile-sub-title>
@@ -32,39 +40,76 @@ export default {
   data () {
     return {
       storyName: '',
-      stories: []
+      stories: [],
+      kind: '',
+      kinds: [],
+      kindsObject: [],
+      kindId: 0
     }
   },
   created () {
     this.loadStories()
+
+    this.$http.get(process.env.API_LOCATION + '/kinds')
+      .then((response) => {
+        this.kindsObject = response.data
+
+        response.data.forEach((kind) => {
+          this.kinds.push(kind.name)
+        })
+      })
+      .catch((error) => console.log(error))
   },
   methods: {
-    storyNameChanged () {
+    searchParamsChanged () {
+      this.getKindIdByName()
       this.loadStories()
     },
     loadStories () {
-      this.$http.get(process.env.API_LOCATION + '/stories', {
+      let titleFilter = {
+        'title': {
+          'like': this.getStoryNameForSearch()
+        }
+      }
+
+      let whereArray = [titleFilter]
+
+      let kindFilter = {
+        'storyKindId': {
+          'eq': this.kindId
+        }
+      }
+
+      if (this.kindId !== 0) {
+        whereArray.push(kindFilter)
+      }
+
+      let requestParam = {
         headers: {
           'Authorization': localStorage.accessToken
-        },
+        }
+      }
+
+      let filterParam = {
         params: {
           'filter': {
-            'include': {'relation': 'storyChapters', 'scope': {'where': {'number': 1}}},
-            'where': {'title': {'like': this.getStoryNameForSearch()}},
+            'where': {'and': whereArray},
             'limit': 20,
             'skip': 0
           }
         }
-      }).then(response => {
-        this.stories = response.data
+      }
 
-        this.stories.forEach((story) => {
-          story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
+      Object.assign(requestParam, filterParam)
 
-          let chapter = story.storyChapters[0]
-          story.firstChapterId = chapter === undefined ? 0 : chapter.id
+      this.$http.get(process.env.API_LOCATION + '/stories', requestParam)
+        .then(response => {
+          this.stories = response.data
+
+          this.stories.forEach((story) => {
+            story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
+          })
         })
-      })
         .catch(error => console.log(error))
     },
     getStoryNameForSearch () {
@@ -75,10 +120,15 @@ export default {
 
       return result
     },
-    gotoReading (storyId, chapterId) {
-      console.log('push storyid = ' + storyId + '; chapterId = ' + chapterId)
-
+    gotoReading (storyId) {
       this.$router.push('/story/' + storyId)
+    },
+    getKindIdByName () {
+      this.kindsObject.forEach((kind) => {
+        if (kind.name === this.kind) {
+          this.kindId = kind.id
+        }
+      })
     }
   }
 }
