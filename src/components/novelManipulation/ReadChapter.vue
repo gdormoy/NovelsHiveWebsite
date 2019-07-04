@@ -5,7 +5,7 @@
     <chapter-navigation
       :previous-chapter-id="previousChapterId"
       :next-chapter-id="nextChapterId"
-      style="margin-bottom: 10%;"
+      style="margin-bottom: 13%;"
     ></chapter-navigation>
 
     <div style="text-align: left;">
@@ -16,52 +16,38 @@
     <chapter-navigation
       :previous-chapter-id="previousChapterId"
       :next-chapter-id="nextChapterId"
-      style="margin-bottom: 5%;"
+      style="margin-bottom: 7%;"
     ></chapter-navigation>
-
-    <!--
-    <v-btn
-        flat
-        :disabled="previousChapterId === null"
-        style="position: absolute; left: 20%;"
-        @click="gotoChapter(previousChapterId)">
-      <v-icon>$vuetify.icons.prev</v-icon>
-      Previous
-    </v-btn>
-    <v-btn
-        flat
-        :disabled="nextChapterId === null"
-        style="position: absolute; right: 20%;"
-        @click="gotoChapter(nextChapterId)">
-      Next <v-icon>$vuetify.icons.next</v-icon>
-    </v-btn>
--->
+    <chapter-commentaries :chapter-id="chapterId"></chapter-commentaries>
   </div>
 </template>
 
 <script>
-import ChapterNavigation from './ChapterNavigation'
+import ChapterNavigation from '../novelPresentation/ChapterNavigation'
+import ChapterCommentaries from '../commentaries/ChapterCommentaries'
 
 export default {
   name: 'ReadChapter',
-  components: {ChapterNavigation},
+  components: {ChapterNavigation, ChapterCommentaries},
   data () {
     return {
       storyTitle: '',
       chapterTitle: '',
       chapterData: '',
       previousChapterId: null,
-      nextChapterId: null
+      nextChapterId: null,
+      chapterId: 0
     }
   },
   created () {
+    this.chapterId = this.$route.params.id.toString()
     this.loadData()
   },
   methods: {
     loadData () {
       this.$store.state.loader = true
 
-      this.$http.get(process.env.API_LOCATION + '/chapters/' + this.$route.params.id + '/read', {
+      this.$http.get(process.env.API_LOCATION + '/chapters/' + this.chapterId + '/read', {
         headers: {
           'Authorization': localStorage.accessToken
         }
