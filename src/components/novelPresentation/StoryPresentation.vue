@@ -8,9 +8,11 @@
           <v-icon v-else large color="darken-2" @click="addFavorite">star</v-icon>
         </div>
       </h1>
-      <p style="margin-top: 3%;"><strong>Author : </strong>{{authorUsername}}</p>
-      <p style="margin-top: 3%;"><strong>Kind : </strong>{{storyKind}}</p>
-      <p style="margin-bottom: 7%; margin-top: 3%;"><strong>Synopsis : </strong>{{story.synopsis}}</p>
+      <p class="presentationElement"><strong>Author : </strong>{{authorUsername}}</p>
+      <p class="presentationElement"><strong>Kind : </strong>{{storyKind}}</p>
+      <p class="presentationElement"><strong>Publication date : </strong>{{publication_date}}</p>
+      <p class="presentationElement"><strong>Last update date : </strong>{{update_date}}</p>
+      <p class="presentationElement" style="margin-bottom: 7%;"><strong>Synopsis : </strong>{{story.synopsis}}</p>
 
       <div id="chapters" v-for="chapter in story.storyChapters" :key="chapter.id" style="margin-bottom: 1%">
         <router-link :to="{ name: 'read', params: { id: chapter.id } }" v-if="chapter.online" tag="h3">
@@ -23,6 +25,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'StoryPresentation',
   data () {
@@ -31,7 +35,9 @@ export default {
       maxChapter: 0,
       storyKind: '',
       favoriteId: '',
-      authorUsername: ''
+      authorUsername: '',
+      publication_date: '',
+      update_date: ''
     }
   },
   created () {
@@ -54,6 +60,9 @@ export default {
         this.storyKind = this.story.storyKind.name
 
         this.favoriteId = story.favorites[0] === undefined ? undefined : story.favorites[0].id
+
+        this.publication_date = moment(this.story.publication_date).format('lll')
+        this.update_date = moment(this.story.update_date).format('lll')
       })
       .catch(error => console.log(error))
       .finally(() => { this.$store.state.loader = false })
@@ -90,5 +99,9 @@ export default {
   #chapters:hover {
     cursor: pointer;
     color: grey;
+  }
+
+  .presentationElement {
+    margin-top: 3%;
   }
 </style>
