@@ -2,21 +2,35 @@
   <div id="storySearcher">
     <h1>What do you want to read ?</h1>
 
-    <v-text-field
-      v-model="storyName"
-      placeholder="Story name"
-      prepend-inner-icon="search"
-      clearable
-      @input="searchParamsChanged"
-    ></v-text-field>
+    <div id="filter">
+      <v-text-field
+        v-model="storyName"
+        placeholder="Story name"
+        prepend-inner-icon="search"
+        clearable
+        @input="searchParamsChanged"
+      ></v-text-field>
 
-    <v-select
-      v-model="kind"
-      :items="kinds"
-      label="Kind"
-      menu-props="auto"
-      @change="searchParamsChanged"
-      attach></v-select>
+      <v-select
+        v-model="kind"
+        :items="kinds"
+        label="Kind"
+        menu-props="auto"
+        @change="searchParamsChanged"
+        attach></v-select>
+
+      <v-tabs
+        v-model="favorite"
+        @change="searchParamsChanged"
+      >
+        <v-tab
+          v-for="(favLabel, index) in favorites"
+          :key="index"
+        >
+          {{favLabel}}
+        </v-tab>
+      </v-tabs>
+    </div>
 
     <v-list three-line>
       <template v-for="story in stories">
@@ -24,7 +38,10 @@
           :key="story.id"
           @click="gotoReading(story.id)">
           <v-list-tile-content>
-            <v-list-tile-title>{{story.title}}</v-list-tile-title>
+            <v-list-tile-title>
+              {{story.title}}
+              <v-icon v-if="story.favorites[0] !== undefined" color="yellow darken-2" size="18">star</v-icon>
+            </v-list-tile-title>
             <v-list-tile-sub-title>{{story.synopsis}}</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -43,19 +60,24 @@ export default {
       stories: [],
       kind: '',
       kinds: [],
-      kindsObject: [],
-      kindId: 0
+      kindsObject: [{name: 'All kinds', id: 0}],
+      kindId: 0,
+      favorite: 0,
+      favorites: ['All', 'Favorites', 'Non favorites']
     }
   },
   created () {
     this.loadStories()
+    console.log(this.kindsObject)
 
     this.$http.get(process.env.API_LOCATION + '/kinds')
       .then((response) => {
-        this.kindsObject = response.data
+        this.kinds.push(this.kindsObject[0].name)
+        this.kind = this.kindsObject[0].name
 
         response.data.forEach((kind) => {
           this.kinds.push(kind.name)
+          this.kindsObject.push(kind)
         })
       })
       .catch((error) => console.log(error))
@@ -93,6 +115,14 @@ export default {
       let filterParam = {
         params: {
           'filter': {
+            'include': {
+              'relation': 'favorites',
+              'scope': {
+                'where': {
+                  'userId': localStorage.userId
+                }
+              }
+            },
             'where': {'and': whereArray},
             'limit': 20,
             'skip': 0
@@ -100,14 +130,25 @@ export default {
         }
       }
 
+      console.log(JSON.stringify(filterParam.params))
+
       Object.assign(requestParam, filterParam)
 
       this.$http.get(process.env.API_LOCATION + '/stories', requestParam)
         .then(response => {
-          this.stories = response.data
+          this.stories = []
+          // this.stories = response.data
 
-          this.stories.forEach((story) => {
+          // this.stories.forEach((story) => {
+          response.data.forEach((story) => {
             story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
+
+            if ((this.favorite === 1 && story.favorites[0] === undefined) ||
+                (this.favorite === 2 && story.favorites[0] !== undefined)) {
+              return
+            }
+
+            this.stories.push(story)
           })
         })
         .catch(error => console.log(error))
