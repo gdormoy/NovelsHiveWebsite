@@ -61,6 +61,7 @@ export default {
 
         this.favoriteId = story.favorites[0] === undefined ? undefined : story.favorites[0].id
 
+        moment.locale('fr')
         this.publication_date = moment(this.story.publication_date).format('lll')
         this.update_date = moment(this.story.update_date).format('lll')
       })
