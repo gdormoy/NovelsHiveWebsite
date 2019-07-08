@@ -5,9 +5,12 @@
     <h2>Drafts</h2>
     <chapter-icon-list :chapters="draftChapters"></chapter-icon-list>
 
+    <h2>Beta</h2>
+    <chapter-icon-list :chapters="betaChapters"></chapter-icon-list>
+
     <h2>Completed</h2>
     <div v-for="story in completedChapters" :key="story.storyName">
-      <chapter-icon-list :chapters="story.chapters" :story-name="story.storyName"></chapter-icon-list>
+      <chapter-icon-list :chapters="story.chapters" :story-name="story.storyName" :story-id="storyId"></chapter-icon-list>
     </div>
 
     <v-speed-dial
@@ -63,8 +66,10 @@ export default {
     return {
       stories: [],
       draftChapters: [],
+      betaChapters: [],
       completedChapters: [],
       tempCompletedChapters: [],
+      storyId: '',
       fab: false
     }
   },
@@ -80,6 +85,7 @@ export default {
 
         response.data.chapters.stories.forEach(function (story) {
           let storyName = story.title
+          this.storyId = story.id
           this.$data.tempCompletedChapters = {'storyName': storyName, chapters: []}
 
           story.storyChapters.forEach(function (chapter) {
@@ -94,6 +100,40 @@ export default {
             this.$data.completedChapters.push(this.$data.tempCompletedChapters)
           }
         }, this)
+      })
+
+    this.$http.get(process.env.API_LOCATION + '/stories', {
+      headers: {
+        'Authorization': localStorage.accessToken
+      },
+      params: {
+        'filter': {
+          'include': [{
+            'relation': 'betaReaders',
+            'scope': {
+              'where': {
+                'userId': localStorage.userId
+              }
+            }
+          },
+          {
+            'relation': 'storyChapters'
+          }
+          ]
+        }
+      }
+    })
+      .then(res => {
+        let stories = res.data
+        console.log(stories)
+        stories.forEach(function (story) {
+          if (story.betaReaders.length > 0) {
+            story.storyChapters.forEach(function (chapter) {
+              console.log(chapter)
+              this.betaChapters.push(chapter)
+            })
+          }
+        })
       })
       .finally(() => {
         this.$store.state.loader = false

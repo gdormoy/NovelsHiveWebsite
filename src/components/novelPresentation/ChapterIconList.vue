@@ -10,7 +10,7 @@
       wrap
     >
       <template v-slot:header v-if="storyName">
-        <h3>{{storyName}}</h3>
+        <h3 @click="gotoReading(storyId)">{{storyName}}</h3>
       </template>
       <template v-slot:item="props">
         <v-flex
@@ -45,7 +45,13 @@ export default {
       type: Array,
       required: true
     },
-    storyName: String
+    storyName: String,
+    storyId: String
+  },
+  methods: {
+    gotoReading (storyId) {
+      this.$router.push('/story/' + storyId)
+    }
   }
 }
 </script>
