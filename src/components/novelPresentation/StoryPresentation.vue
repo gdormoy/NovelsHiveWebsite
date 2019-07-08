@@ -3,10 +3,7 @@
     <div id="story" style="margin-left: auto; margin-right: auto; width: 80%; text-justify: auto;">
       <h1>
         <span style="text-decoration: underline">{{story.title}}</span>
-        <div style="float: right;">
-          <v-icon v-if="favoriteId !== undefined" large color="yellow darken-2" @click="deleteFavorite">star</v-icon>
-          <v-icon v-else large color="darken-2" @click="addFavorite">star</v-icon>
-        </div>
+        <favorite-handler style="float: right;" :favorite-id="favoriteId" :story-id="this.$route.params.id"></favorite-handler>
       </h1>
       <p class="presentationElement"><strong>Author : </strong>{{authorUsername}}</p>
       <p class="presentationElement"><strong>Kind : </strong>{{storyKind}}</p>
@@ -26,9 +23,11 @@
 
 <script>
 import moment from 'moment'
+import FavoriteHandler from '../novelManipulation/FavoriteHandler'
 
 export default {
   name: 'StoryPresentation',
+  components: {FavoriteHandler},
   data () {
     return {
       story: {},
@@ -67,31 +66,6 @@ export default {
       })
       .catch(error => console.log(error))
       .finally(() => { this.$store.state.loader = false })
-  },
-  methods: {
-    addFavorite () {
-      let id = this.$route.params.id
-      this.$http.post(process.env.API_LOCATION + '/stories/' + id + '/favorites', {
-        headers: {
-          'X-Access-Token': localStorage.accessToken
-        },
-        'userId': localStorage.userId,
-        'storyId': id
-      })
-        .then(res => { this.favoriteId = res.data.id })
-    },
-    deleteFavorite () {
-      let id = this.$route.params.id
-      this.$http.delete(process.env.API_LOCATION + '/favorites/' + this.favoriteId, {
-        headers: {
-          'X-Access-Token': localStorage.accessToken
-        },
-        'userId': localStorage.userId,
-        'storyId': id
-      })
-        .then(res => (console.log(res)))
-      this.favoriteId = undefined
-    }
   }
 }
 </script>
