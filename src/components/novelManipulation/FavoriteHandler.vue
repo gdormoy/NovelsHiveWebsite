@@ -14,7 +14,7 @@ export default {
   },
   methods: {
     addFavorite () {
-      this.$http.post(process.env.API_LOCATION + '/stories/' + this.storyId + '/favorites', {
+      this.$http.post(process.env.API_LOCATION + '/favorites', {
         headers: {
           'X-Access-Token': localStorage.accessToken
         },
