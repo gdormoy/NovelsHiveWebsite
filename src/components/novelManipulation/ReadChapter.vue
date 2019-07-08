@@ -1,6 +1,9 @@
 <template>
   <div id="chapterReader">
-    <h1 style="margin-bottom: 5%">{{storyTitle}}</h1>
+    <h1 style="margin-bottom: 5%">
+      {{storyTitle}}
+      <favorite-handler :story-id="storyId" :favorite-id="favoriteId" style="float: right;"></favorite-handler>
+    </h1>
 
     <chapter-navigation
       :previous-chapter-id="previousChapterId"
@@ -25,18 +28,21 @@
 <script>
 import ChapterNavigation from '../novelPresentation/ChapterNavigation'
 import ChapterCommentaries from '../commentaries/ChapterCommentaries'
+import FavoriteHandler from './FavoriteHandler'
 
 export default {
   name: 'ReadChapter',
-  components: {ChapterNavigation, ChapterCommentaries},
+  components: {FavoriteHandler, ChapterNavigation, ChapterCommentaries},
   data () {
     return {
       storyTitle: '',
+      storyId: 0,
       chapterTitle: '',
       chapterData: '',
       previousChapterId: null,
       nextChapterId: null,
-      chapterId: 0
+      chapterId: 0,
+      favoriteId: 0
     }
   },
   created () {
@@ -50,6 +56,9 @@ export default {
       this.$http.get(process.env.API_LOCATION + '/chapters/' + this.chapterId + '/read', {
         headers: {
           'Authorization': localStorage.accessToken
+        },
+        params: {
+          userId: localStorage.userId
         }
       }).then(response => this.getChapterSuccessful(response))
         .catch(error => this.getChapterFailed(error))
@@ -58,6 +67,8 @@ export default {
         })
     },
     getChapterSuccessful (response) {
+      console.log(response)
+
       if (!response.data) {
         return this.getChapterFailed(null)
       }
@@ -67,6 +78,8 @@ export default {
       this.chapterData = Buffer.from(response.data.chapter.text.data).toString('utf-8')
       this.previousChapterId = response.data.chapter.previousChapter.id
       this.nextChapterId = response.data.chapter.nextChapter.id
+      this.favoriteId = response.data.chapter.favoriteId
+      this.storyId = response.data.chapter.storyId
     },
     getChapterFailed (error) {
       console.log(error)
