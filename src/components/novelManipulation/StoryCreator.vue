@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div id="storyCreator">
     <h1>Let's begin a nice story</h1>
 
@@ -32,6 +32,28 @@
         menu-props="auto"
         @change="getKindIdByName"
         attach></v-select>
+
+      <template>
+        <v-combobox
+          v-model="tags"
+          :items="tagsProposal"
+          :search-input.sync="tagValue"
+          label="Tags"
+          chips
+          clearable
+          multiple
+        >
+          <template v-slot:selection="data">
+            <v-chip
+              :selected="data.selected"
+              close
+              @input="removeTag(data.item)"
+            >
+              {{ data.item }}
+            </v-chip>
+          </template>
+        </v-combobox>
+      </template>
 
       <v-textarea
         auto-grow
@@ -73,7 +95,10 @@ export default {
       kind: '',
       kinds: [],
       kindsObject: [],
-      kindId: 0
+      kindId: 0,
+      tags: [],
+      tagsProposal: [],
+      tagValue: ''
     }
   },
   created () {
@@ -136,6 +161,41 @@ export default {
           console.log(kind.id)
           this.kindId = kind.id
         }
+      })
+    },
+    removeTag (item) {
+      this.tags.splice(this.tags.indexOf(item), 1)
+      this.tags = [...this.tags]
+    }
+  },
+  watch: {
+    tagValue () {
+      console.log(this.tagValue)
+      let tag = this.tagValue
+
+      if (tag === null || tag === undefined) return
+
+      tag = tag.trim()
+
+      if (tag.length < 3) {
+        this.tagsProposal = []
+        return
+      }
+
+      this.$http.get(process.env.API_LOCATION + '/tags', {
+        params: {
+          'filter': {
+            'where': {
+              'name': {
+                'like': '%' + tag + '%'
+              }
+            }
+          }
+        }
+      }).then(response => {
+        let tags = response.data.map(object => object.name)
+
+        this.tagsProposal = tags
       })
     }
   }
