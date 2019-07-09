@@ -132,6 +132,10 @@ export default {
         'storyKindId': this.kindId
       }
 
+      if (this.tags !== null && this.tags !== undefined) {
+        requestBody.storyTags = this.tags
+      }
+
       console.log(requestBody)
 
       this.$http.post(process.env.API_LOCATION + '/stories', requestBody)
