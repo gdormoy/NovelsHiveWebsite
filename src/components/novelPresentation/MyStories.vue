@@ -117,7 +117,12 @@ export default {
             }
           },
           {
-            'relation': 'storyChapters'
+            'relation': 'storyChapters',
+            'scope': {
+              'where': {
+                'online': null
+              }
+            }
           }
           ]
         }
@@ -129,10 +134,7 @@ export default {
         stories.forEach(function (story) {
           if (story.betaReaders.length > 0) {
             story.storyChapters.forEach(function (chapter) {
-              if (chapter.online !== true) {
-                chapters.push(chapter)
-              }
-              console.log(chapters)
+              chapters.push(chapter)
             })
           }
         })
