@@ -66,9 +66,9 @@ export default {
     return {
       stories: [],
       draftChapters: [],
-      betaChapters: [],
       completedChapters: [],
       tempCompletedChapters: [],
+      betaChapters: [],
       storyId: '',
       fab: false
     }
@@ -125,15 +125,18 @@ export default {
     })
       .then(res => {
         let stories = res.data
-        console.log(stories)
+        let chapters = []
         stories.forEach(function (story) {
           if (story.betaReaders.length > 0) {
             story.storyChapters.forEach(function (chapter) {
-              console.log(chapter)
-              this.betaChapters.push(chapter)
+              if (chapter.online !== true) {
+                chapters.push(chapter)
+              }
+              console.log(chapters)
             })
           }
         })
+        this.betaChapters = chapters
       })
       .finally(() => {
         this.$store.state.loader = false
