@@ -33,27 +33,30 @@
         @change="getKindIdByName"
         attach></v-select>
 
-      <template>
-        <v-combobox
-          v-model="tags"
-          :items="tagsProposal"
-          :search-input.sync="tagValue"
-          label="Tags"
-          chips
-          clearable
-          multiple
-        >
-          <template v-slot:selection="data">
-            <v-chip
-              :selected="data.selected"
-              close
-              @input="removeTag(data.item)"
-            >
-              {{ data.item }}
-            </v-chip>
-          </template>
-        </v-combobox>
-      </template>
+<!--      <template>-->
+<!--        <v-combobox-->
+<!--          v-model="tags"-->
+<!--          :items="tagsProposal"-->
+<!--          :search-input.sync="tagValue"-->
+<!--          label="Tags"-->
+<!--          chips-->
+<!--          clearable-->
+<!--          multiple-->
+<!--        >-->
+<!--          <template v-slot:selection="data">-->
+<!--            <v-chip-->
+<!--              :selected="data.selected"-->
+<!--              close-->
+<!--              @input="removeTag(data.item)"-->
+<!--            >-->
+<!--              {{ data.item }}-->
+<!--            </v-chip>-->
+<!--          </template>-->
+<!--        </v-combobox>-->
+<!--      </template>-->
+
+      <tag-combobox
+      @tags-changed="updateTags"></tag-combobox>
 
       <v-textarea
         auto-grow
@@ -74,7 +77,9 @@
 </template>
 
 <script>
+import TagCombobox from '../utils/tagCombobox'
 export default {
+  components: {TagCombobox},
   data () {
     return {
       formIsValid: false,
@@ -118,7 +123,6 @@ export default {
       if ((this.title === undefined || this.title === '') || (this.synopsis === undefined || this.synopsis === '') ||
           (this.kindId === undefined || this.kindId === '')) {
         this.formIsValid = false
-        return
       }
 
       let now = Date.now()
@@ -135,8 +139,6 @@ export default {
       if (this.tags !== null && this.tags !== undefined) {
         requestBody.storyTags = this.tags
       }
-
-      console.log(requestBody)
 
       this.$http.post(process.env.API_LOCATION + '/stories', requestBody)
         .then(response => this.createSuccessful(response))
@@ -170,6 +172,9 @@ export default {
     removeTag (item) {
       this.tags.splice(this.tags.indexOf(item), 1)
       this.tags = [...this.tags]
+    },
+    updateTags (tags) {
+      this.tags = tags
     }
   },
   watch: {
