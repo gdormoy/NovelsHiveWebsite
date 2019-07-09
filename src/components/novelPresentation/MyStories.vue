@@ -120,7 +120,7 @@ export default {
             'relation': 'storyChapters',
             'scope': {
               'where': {
-                'online': null
+                'online': false
               }
             }
           }
