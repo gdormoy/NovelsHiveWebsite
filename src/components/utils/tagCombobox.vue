@@ -12,6 +12,7 @@
       <v-chip
         :selected="data.selected"
         close
+        :color="color"
         @input="removeTag(data.item)"
       >
         {{ data.item }}
@@ -29,6 +30,9 @@ export default {
       tagsProposal: [],
       tagValue: ''
     }
+  },
+  props: {
+    color: String
   },
   methods: {
     removeTag (item) {

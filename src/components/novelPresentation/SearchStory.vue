@@ -32,7 +32,7 @@
       </v-tabs>
     </div>
 
-    <tag-combobox @tags-changed="updateTags"></tag-combobox>
+    <tag-combobox @tags-changed="updateTags" :color="chipsColor"></tag-combobox>
 
     <div v-for="story in stories"
          :key="story.id"
@@ -43,7 +43,7 @@
         <v-icon v-if="story.favorites[0] !== undefined" color="yellow darken-2" size="18">star</v-icon>
       </div>
       <div class="chips" v-for="tag in story.tags" :key="tag">
-        <v-chip v-if="tags.includes(tag)" color="blue-grey lighten-4">{{ tag }}</v-chip>
+        <v-chip v-if="tags.includes(tag)" :color="chipsColor">{{ tag }}</v-chip>
         <v-chip v-else>{{ tag }}</v-chip>
       </div>
       <div class="synopsis">
@@ -69,7 +69,8 @@ export default {
       kindId: 0,
       favorite: 0,
       favorites: ['All', 'Favorites', 'Non favorites'],
-      tags: []
+      tags: [],
+      chipsColor: 'orange lighten-4'
     }
   },
   created () {
