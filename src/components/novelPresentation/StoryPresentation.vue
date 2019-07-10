@@ -3,8 +3,11 @@
     <div id="story" style="margin-left: auto; margin-right: auto; width: 80%; text-justify: auto;">
       <h1>
         <span style="text-decoration: underline">{{story.title}}</span>
-        <favorite-handler style="float: right;" :favorite-id="favoriteId" :story-id="this.$route.params.id"></favorite-handler>
+        <favorite-handler style="float: right;" :favorite-id="favoriteId" :story-id="parseInt(this.$route.params.id)"></favorite-handler>
       </h1>
+      <div class="presentationElement" v-for="tag in story.tags" :key="tag" style="display: inline-block;">
+        <v-chip>{{ tag }}</v-chip>
+      </div>
       <p class="presentationElement"><strong>Author : </strong>{{authorUsername}}</p>
       <p class="presentationElement"><strong>Kind : </strong>{{storyKind}}</p>
       <p class="presentationElement"><strong>Publication date : </strong>{{publication_date}}</p>
@@ -33,7 +36,7 @@ export default {
       story: {},
       maxChapter: 0,
       storyKind: '',
-      favoriteId: '',
+      favoriteId: 0,
       authorUsername: '',
       publication_date: '',
       update_date: ''
@@ -45,7 +48,17 @@ export default {
     let id = this.$route.params.id
     this.$http.get(process.env.API_LOCATION + '/stories/' + id + '/chapters', {
       params: {
-        'userId': localStorage.userId
+        'userId': localStorage.userId,
+        filter: {
+          include: {
+            'relation': 'storyHasStoryTags',
+            'scope': {
+              'include': {
+                'relation': 'storyTag'
+              }
+            }
+          }
+        }
       }
     })
       .then(response => {
@@ -63,6 +76,9 @@ export default {
         moment.locale('fr')
         this.publication_date = moment(this.story.publication_date).format('lll')
         this.update_date = moment(this.story.update_date).format('lll')
+
+        this.story.tags = this.story.storyHasStoryTags.map(tagLink => tagLink.storyTag.name)
+        delete this.story.storyHasStoryTags
       })
       .catch(error => console.log(error))
       .finally(() => { this.$store.state.loader = false })
