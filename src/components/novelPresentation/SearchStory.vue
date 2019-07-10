@@ -146,17 +146,12 @@ export default {
         }
       }
 
-      // console.log(JSON.stringify(filterParam.params))
-
       Object.assign(requestParam, filterParam)
 
       this.$http.get(process.env.API_LOCATION + '/stories', requestParam)
         .then(response => {
           console.log(response)
           this.stories = []
-          // this.stories = response.data
-
-          // this.stories.forEach((story) => {
           response.data.forEach((story) => {
             story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
 
