@@ -50,27 +50,6 @@
         {{ story.synopsis }}
       </div>
     </div>
-
-<!--    <v-list three-line>-->
-<!--      <template v-for="story in stories">-->
-<!--        <v-list-tile-->
-<!--          :key="story.id"-->
-<!--          @click="gotoReading(story.id)">-->
-<!--          <v-list-tile-content>-->
-<!--            <v-list-tile-title>-->
-<!--              {{story.title}}-->
-<!--              <v-icon v-if="story.favorites[0] !== undefined" color="yellow darken-2" size="18">star</v-icon>-->
-<!--            </v-list-tile-title>-->
-<!--            <v-list-tile-sub-title>-->
-<!--              <div v-for="tag in story.tags" :key="tag">-->
-<!--                <v-chip>{{ tag }}</v-chip>-->
-<!--              </div><br /><br />-->
-<!--              {{story.synopsis}}-->
-<!--            </v-list-tile-sub-title>-->
-<!--          </v-list-tile-content>-->
-<!--        </v-list-tile>-->
-<!--      </template>-->
-<!--    </v-list>-->
   </div>
 </template>
 
