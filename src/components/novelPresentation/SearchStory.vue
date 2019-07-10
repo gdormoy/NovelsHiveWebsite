@@ -32,28 +32,33 @@
       </v-tabs>
     </div>
 
-    <v-list three-line>
-      <template v-for="story in stories">
-        <v-list-tile
-          :key="story.id"
-          @click="gotoReading(story.id)">
-          <v-list-tile-content>
-            <v-list-tile-title>
-              {{story.title}}
-              <v-icon v-if="story.favorites[0] !== undefined" color="yellow darken-2" size="18">star</v-icon>
-            </v-list-tile-title>
-            <v-list-tile-sub-title>{{story.synopsis}}</v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </template>
-    </v-list>
+    <tag-combobox @tags-changed="updateTags"></tag-combobox>
+
+    <div v-for="story in stories"
+         :key="story.id"
+         @click="gotoReading(story.id)"
+         class="storyTile">
+      <div class="title">
+        {{ story.title }}
+        <v-icon v-if="story.favorites[0] !== undefined" color="yellow darken-2" size="18">star</v-icon>
+      </div>
+      <div class="chips" v-for="tag in story.tags" :key="tag">
+        <v-chip v-if="tags.includes(tag)" color="blue-grey lighten-4">{{ tag }}</v-chip>
+        <v-chip v-else>{{ tag }}</v-chip>
+      </div>
+      <div class="synopsis">
+        {{ story.synopsis }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 
+import TagCombobox from '../utils/tagCombobox'
 export default {
   name: 'SearchStory',
+  components: {TagCombobox},
   data () {
     return {
       storyName: '',
@@ -63,7 +68,8 @@ export default {
       kindsObject: [{name: 'All kinds', id: 0}],
       kindId: 0,
       favorite: 0,
-      favorites: ['All', 'Favorites', 'Non favorites']
+      favorites: ['All', 'Favorites', 'Non favorites'],
+      tags: []
     }
   },
   created () {
@@ -115,14 +121,24 @@ export default {
       let filterParam = {
         params: {
           'filter': {
-            'include': {
-              'relation': 'favorites',
-              'scope': {
-                'where': {
-                  'userId': localStorage.userId
+            'include': [
+              {
+                'relation': 'favorites',
+                'scope': {
+                  'where': {
+                    'userId': localStorage.userId
+                  }
+                }
+              },
+              {
+                'relation': 'storyHasStoryTags',
+                'scope': {
+                  'include': {
+                    'relation': 'storyTag'
+                  }
                 }
               }
-            },
+            ],
             'where': {'and': whereArray},
             'limit': 20,
             'skip': 0
@@ -130,12 +146,13 @@ export default {
         }
       }
 
-      console.log(JSON.stringify(filterParam.params))
+      // console.log(JSON.stringify(filterParam.params))
 
       Object.assign(requestParam, filterParam)
 
       this.$http.get(process.env.API_LOCATION + '/stories', requestParam)
         .then(response => {
+          console.log(response)
           this.stories = []
           // this.stories = response.data
 
@@ -143,9 +160,21 @@ export default {
           response.data.forEach((story) => {
             story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
 
+            // Favorite check
             if ((this.favorite === 1 && story.favorites[0] === undefined) ||
                 (this.favorite === 2 && story.favorites[0] !== undefined)) {
               return
+            }
+
+            // Tag check
+            let tags = story.storyHasStoryTags.map(tagLink => tagLink.storyTag.name)
+            story.tags = tags
+            delete story.storyHasStoryTags
+
+            if (this.tags.length > 0) {
+              let tagsIntersection = tags.filter(tag => this.tags.includes(tag))
+
+              if (tagsIntersection.length !== this.tags.length) return
             }
 
             this.stories.push(story)
@@ -170,11 +199,28 @@ export default {
           this.kindId = kind.id
         }
       })
+    },
+    updateTags (tags) {
+      this.tags = tags
+      this.searchParamsChanged()
     }
   }
 }
 </script>
 
 <style scoped>
+  .storyTile {
+    text-align: left;
+    padding: 1%;
+    border-radius: 5px;
+  }
 
+  .storyTile:hover {
+    cursor: pointer;
+    background-color: #EEEEEE;
+  }
+
+  .chips {
+    display: inline-block;
+  }
 </style>
