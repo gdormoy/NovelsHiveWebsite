@@ -119,21 +119,16 @@ export default {
       })
     },
     addBetaReaders () {
-      let requestParam = {
-        headers: {
-          'Authorization': localStorage.accessToken
-        }
-      }
       let storyId = this.storyId
       let request = this.$http
-      this.users.forEach(function (user) {
-        let params = {
-          'userId': user.id,
+      this.usersId.forEach(function (id) {
+        request.post(process.env.API_LOCATION + '/beta_readers/', {
+          header: {
+            'Authorization': localStorage.accessToken
+          },
+          'userId': id,
           'storyId': storyId
-        }
-        Object.assign(requestParam, params)
-        console.log(requestParam)
-        request.post(process.env.API_LOCATION + '/beta_readers/', requestParam)
+        })
       })
     }
   }
