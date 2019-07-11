@@ -10,7 +10,7 @@
 
     <h2>Completed</h2>
     <div v-for="story in completedChapters" :key="story.storyName">
-      <chapter-icon-list :chapters="story.chapters" :story-name="story.storyName" :story-id="storyId"></chapter-icon-list>
+      <chapter-icon-list :chapters="story.chapters" :story-name="story.storyName"></chapter-icon-list>
     </div>
 
     <v-speed-dial
@@ -69,7 +69,6 @@ export default {
       completedChapters: [],
       tempCompletedChapters: [],
       betaChapters: [],
-      storyId: '',
       fab: false
     }
   },
@@ -85,7 +84,6 @@ export default {
 
         response.data.chapters.stories.forEach(function (story) {
           let storyName = story.title
-          this.storyId = story.id
           this.$data.tempCompletedChapters = {'storyName': storyName, chapters: []}
 
           story.storyChapters.forEach(function (chapter) {
