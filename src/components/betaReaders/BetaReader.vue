@@ -22,11 +22,11 @@
         </v-list-tile>
       </v-list>
       <v-tab
-        v-for='user in users'
-        :key='user.username'
-        @click='deleteUser(user)'
+        v-for='name in users'
+        :key='name'
+        @click='deleteUser(name)'
         >
-        {{user.username}}
+        {{name}}
       </v-tab>
       <v-btn
         style="float: right"
@@ -106,17 +106,15 @@ export default {
     },
     addUser (user) {
       let index = this.usersTab.indexOf(user)
-      this.users.push(user)
+      this.users.push(user.username)
       this.usersId.push(user.id)
       this.usersTab.splice(index, 1)
     },
     deleteUser (user) {
-      let index = this.users.indexOf(user)
-      console.log(index)
+      let index = this.users.indexOf(user.username)
+      let idIndex = this.usersId.indexOf(user.id)
+      this.usersId.splice(idIndex, 1)
       this.users.splice(index, 1)
-      this.users.forEach(function (user) {
-        console.log('user: ' + user.userName)
-      })
     },
     addBetaReaders () {
       let storyId = this.storyId
