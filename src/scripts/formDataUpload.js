@@ -13,9 +13,5 @@ export default function (url, file, name = '') {
     }
   }
 
-  console.log('>> name >> ', name)
-  console.log('>> typeof file >> ', typeof file)
-  console.log('>> formData >> ', formData)
-
   return axios.post(url, formData, config)
 };

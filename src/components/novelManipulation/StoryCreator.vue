@@ -48,10 +48,10 @@
           ref="pictureInput"
           accept="image/jpg, image/jpeg, image/png"
           removable
-          @change="pictureChanged"
           :crop="false"
           remove-button-class="v-btn error"
           button-class="v-btn"
+          label="Panel (Optional)"
         ></vue-picture-input>
       </div>
 
@@ -102,7 +102,6 @@ export default {
   created () {
     this.$http.get(process.env.API_LOCATION + '/kinds')
       .then((response) => {
-        console.log(response)
         this.kindsObject = response.data
 
         response.data.forEach((kind) => {
@@ -121,7 +120,6 @@ export default {
       if (this.$refs.pictureInput.file) {
         FormDataUpload(process.env.API_LOCATION + '/containers/storyImage/upload', this.$refs.pictureInput.file, 'file')
           .then(response => {
-            console.log(response)
             this.storyCreation(response.data.result.files.file[0].name)
           })
       } else {
@@ -172,7 +170,6 @@ export default {
     getKindIdByName () {
       this.kindsObject.forEach((kind) => {
         if (kind.name === this.kind) {
-          console.log(kind.id)
           this.kindId = kind.id
         }
       })
@@ -183,20 +180,10 @@ export default {
     },
     updateTags (tags) {
       this.tags = tags
-    },
-    pictureChanged () {
-      console.log('Picture changed')
-      if (this.$refs.pictureInput.image) {
-        console.log('Picture loaded')
-        console.log(this.$refs.pictureInput.image)
-      } else {
-        console.log('An error occurred during the picture upload')
-      }
     }
   },
   watch: {
     tagValue () {
-      console.log(this.tagValue)
       let tag = this.tagValue
 
       if (tag === null || tag === undefined) return
