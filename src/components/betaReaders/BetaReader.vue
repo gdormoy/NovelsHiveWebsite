@@ -76,7 +76,37 @@ export default {
           readers.push(element.userId)
         })
         this.usersId = readers
-        this.usersId.push(localStorage.userId)
+      })
+  },
+  updated () {
+    let requestParam = {
+      headers: {
+        'Authorization': localStorage.accessToken
+      }
+    }
+
+    let filterParam = {
+      params: {
+        'filter': {
+          'where': {
+            'id': {
+              'inq': this.usersId
+            }
+          }
+        }
+      }
+    }
+    console.log(filterParam)
+    Object.assign(requestParam, filterParam)
+
+    this.$http.get(process.env.API_LOCATION + '/users', requestParam)
+      .then(res => {
+        let users = []
+        res.data.forEach(function (user) {
+          users.push(user.username)
+        })
+        this.users = users
+        console.log(this.users)
       })
   },
   methods: {
@@ -112,15 +142,19 @@ export default {
 
       this.$http.get(process.env.API_LOCATION + '/users', requestParam)
         .then(res => {
-          let exist = ''
           let usersId = this.usersId
           this.usersTab = res.data
           let usersTab = this.usersTab
           usersTab.forEach(function (user) {
-            exist = usersId.includes(user.id)
-            if (exist) {
+            if (user.id === parseInt(localStorage.userId)) {
               let index = usersTab.indexOf(user)
               usersTab.splice(index, 1)
+            } else {
+              let exist = usersId.includes(user.id)
+              if (exist) {
+                let index = usersTab.indexOf(user)
+                usersTab.splice(index, 1)
+              }
             }
           })
           this.usersTab = usersTab
