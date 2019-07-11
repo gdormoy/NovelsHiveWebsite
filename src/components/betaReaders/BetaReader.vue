@@ -49,6 +49,35 @@ export default {
   }),
   created () {
     this.storyId = this.$route.params.id
+
+    let requestParam = {
+      headers: {
+        'Authorization': localStorage.accessToken
+      }
+    }
+
+    let filterParam = {
+      params: {
+        'filter': {
+          'where': {
+            'storyId': this.storyId
+          }
+        }
+      }
+    }
+
+    Object.assign(requestParam, filterParam)
+
+    this.$http.get(process.env.API_LOCATION + '/beta_readers', requestParam)
+      .then(res => {
+        let beta = res.data
+        let readers = []
+        beta.forEach(function (element) {
+          readers.push(element.userId)
+        })
+        this.usersId = readers
+        this.usersId.push(localStorage.userId)
+      })
   },
   methods: {
     searchParamsChanged () {
@@ -60,6 +89,7 @@ export default {
           'like': this.getUserNameForSearch()
         }
       }
+
       let whereArray = [userFilter]
 
       let requestParam = {
@@ -87,9 +117,9 @@ export default {
           this.usersTab = res.data
           let usersTab = this.usersTab
           usersTab.forEach(function (user) {
-            let index = usersTab.indexOf(user)
             exist = usersId.includes(user.id)
             if (exist) {
+              let index = usersTab.indexOf(user)
               usersTab.splice(index, 1)
             }
           })
