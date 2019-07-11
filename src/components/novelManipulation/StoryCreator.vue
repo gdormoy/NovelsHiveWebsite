@@ -33,28 +33,6 @@
         @change="getKindIdByName"
         attach></v-select>
 
-<!--      <template>-->
-<!--        <v-combobox-->
-<!--          v-model="tags"-->
-<!--          :items="tagsProposal"-->
-<!--          :search-input.sync="tagValue"-->
-<!--          label="Tags"-->
-<!--          chips-->
-<!--          clearable-->
-<!--          multiple-->
-<!--        >-->
-<!--          <template v-slot:selection="data">-->
-<!--            <v-chip-->
-<!--              :selected="data.selected"-->
-<!--              close-->
-<!--              @input="removeTag(data.item)"-->
-<!--            >-->
-<!--              {{ data.item }}-->
-<!--            </v-chip>-->
-<!--          </template>-->
-<!--        </v-combobox>-->
-<!--      </template>-->
-
       <tag-combobox
       @tags-changed="updateTags"></tag-combobox>
 
@@ -64,6 +42,18 @@
         label="Synopsis"
         required
         :rules="synopsisRules"></v-textarea>
+
+      <div id="pictureInputContainer">
+        <vue-picture-input
+          ref="pictureInput"
+          accept="image/jpg, image/jpeg, image/png"
+          removable
+          @change="pictureChanged"
+          :crop="false"
+          remove-button-class="v-btn error"
+          button-class="v-btn"
+        ></vue-picture-input>
+      </div>
 
       <v-btn
         color="success"
@@ -78,8 +68,11 @@
 
 <script>
 import TagCombobox from '../utils/tagCombobox'
+import VuePictureInput from 'vue-picture-input'
+import FormDataUpload from '../../scripts/formDataUpload'
+
 export default {
-  components: {TagCombobox},
+  components: {TagCombobox, VuePictureInput},
   data () {
     return {
       formIsValid: false,
@@ -125,6 +118,17 @@ export default {
         this.formIsValid = false
       }
 
+      if (this.$refs.pictureInput.file) {
+        FormDataUpload(process.env.API_LOCATION + '/containers/storyImage/upload', this.$refs.pictureInput.file, 'file')
+          .then(response => {
+            console.log(response)
+            this.storyCreation(response.data.result.files.file[0].name)
+          })
+      } else {
+        this.storyCreation()
+      }
+    },
+    storyCreation (filename) {
       let now = Date.now()
 
       let requestBody = {
@@ -134,6 +138,10 @@ export default {
         'update_date': now,
         'userId': localStorage.userId,
         'storyKindId': this.kindId
+      }
+
+      if (filename !== undefined) {
+        requestBody.panel = filename
       }
 
       if (this.tags !== null && this.tags !== undefined) {
@@ -175,6 +183,15 @@ export default {
     },
     updateTags (tags) {
       this.tags = tags
+    },
+    pictureChanged () {
+      console.log('Picture changed')
+      if (this.$refs.pictureInput.image) {
+        console.log('Picture loaded')
+        console.log(this.$refs.pictureInput.image)
+      } else {
+        console.log('An error occurred during the picture upload')
+      }
     }
   },
   watch: {
@@ -212,5 +229,31 @@ export default {
 </script>
 
 <style scoped>
+  #pictureInputContainer {
+    max-width: 30%;
+    max-height: 30%;
+    margin: auto;
+  }
 
+  .containerOfContainer {
+    max-width: 30%;
+    margin: auto;
+  }
+
+  .container {
+    background-color: red;
+    position: relative;
+    padding-top: 75%; /* 4:3 Aspect Ratio */
+  }
+
+  .text {
+    position:  absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    font-size: 20px;
+    color: white;
+  }
 </style>
