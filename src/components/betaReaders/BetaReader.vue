@@ -13,7 +13,7 @@
       <v-list>
         <v-list-tile
           v-for='user in usersTab'
-          :key='user.userName'
+          :key='user.username'
           @click='addUser(user)'
         >
           <v-list-tile-content>
@@ -22,17 +22,18 @@
         </v-list-tile>
       </v-list>
       <v-tab
-        v-for='name in users'
-        :key='name'
-        @click='deleteUser(name)'
+        v-for='user in users'
+        :key='user.username'
+        @click='deleteUser(user)'
+        style="font-size: 1.5em"
         >
-        {{name}}
+        {{user.username}}
       </v-tab>
-      <v-btn
+      <v-btn fab dark color="indigo"
         style="float: right"
         @click="addBetaReaders"
       >
-        Add beta lecteur
+        <v-icon dark>add</v-icon>
       </v-btn>
     </div>
 </template>
@@ -59,55 +60,34 @@ export default {
     let filterParam = {
       params: {
         'filter': {
-          'where': {
-            'storyId': this.storyId
-          }
+          'include': 'user'
         }
       }
     }
 
     Object.assign(requestParam, filterParam)
 
-    this.$http.get(process.env.API_LOCATION + '/beta_readers', requestParam)
+    this.$http.get(process.env.API_LOCATION + '/stories/' + this.storyId + '/betaReaders', requestParam)
       .then(res => {
-        let beta = res.data
+        let data = res.data
         let readers = []
-        beta.forEach(function (element) {
-          readers.push(element.userId)
+        let readersId = []
+        data.forEach(function (reader) {
+          let user = {
+            id: reader.id,
+            userId: reader.user.id,
+            username: reader.user.username
+          }
+          readers.push(user)
+          readersId.push(reader.user.id)
         })
-        this.usersId = readers
+        this.usersId = readersId
+        this.users = readers
       })
+    this.searchParamsChanged()
   },
   updated () {
-    let requestParam = {
-      headers: {
-        'Authorization': localStorage.accessToken
-      }
-    }
-
-    let filterParam = {
-      params: {
-        'filter': {
-          'where': {
-            'id': {
-              'inq': this.usersId
-            }
-          }
-        }
-      }
-    }
-    console.log(filterParam)
-    Object.assign(requestParam, filterParam)
-
-    this.$http.get(process.env.API_LOCATION + '/users', requestParam)
-      .then(res => {
-        let users = []
-        res.data.forEach(function (user) {
-          users.push(user.username)
-        })
-        this.users = users
-        console.log(this.users)
-      })
+    this.searchParamsChanged()
   },
   methods: {
     searchParamsChanged () {
@@ -131,9 +111,7 @@ export default {
       let filterParam = {
         params: {
           'filter': {
-            'where': {'and': whereArray},
-            'limit': 20,
-            'skip': 0
+            'where': {'and': whereArray}
           }
         }
       }
@@ -142,20 +120,24 @@ export default {
 
       this.$http.get(process.env.API_LOCATION + '/users', requestParam)
         .then(res => {
+          let usersTab = res.data
           let usersId = this.usersId
-          this.usersTab = res.data
-          let usersTab = this.usersTab
+          let indexUser = ''
+          let indexTab = []
           usersTab.forEach(function (user) {
             if (user.id === parseInt(localStorage.userId)) {
-              let index = usersTab.indexOf(user)
-              usersTab.splice(index, 1)
+              indexUser = usersTab.indexOf(user)
+              usersTab.splice(indexUser, 1)
             } else {
               let exist = usersId.includes(user.id)
               if (exist) {
-                let index = usersTab.indexOf(user)
-                usersTab.splice(index, 1)
+                indexTab.push(usersTab.indexOf(user))
               }
             }
+          })
+          indexTab.sort((a, b) => b - a)
+          indexTab.forEach(function (index) {
+            usersTab.splice(index, 1)
           })
           this.usersTab = usersTab
         })
@@ -170,27 +152,49 @@ export default {
     },
     addUser (user) {
       let index = this.usersTab.indexOf(user)
-      this.users.push(user.username)
+      console.log(index)
+      let element = {
+        id: -1,
+        userId: user.id,
+        username: user.username
+      }
+      this.users.push(element)
       this.usersId.push(user.id)
       this.usersTab.splice(index, 1)
     },
     deleteUser (user) {
-      let index = this.users.indexOf(user.username)
-      let idIndex = this.usersId.indexOf(user.id)
+      let index = this.users.indexOf(user)
+      let idIndex = this.usersId.indexOf(user.userId)
       this.usersId.splice(idIndex, 1)
       this.users.splice(index, 1)
+      console.log(user.id)
+      if (user.id >= 0) {
+        this.$http.delete(process.env.API_LOCATION + '/beta_readers/' + user.id, {
+          headers: {
+            'Authorization': localStorage.accessToken
+          }
+        })
+          .then(res => {
+            console.log(res)
+          })
+      }
     },
     addBetaReaders () {
       let storyId = this.storyId
       let request = this.$http
-      this.usersId.forEach(function (id) {
-        request.post(process.env.API_LOCATION + '/beta_readers/', {
-          header: {
-            'Authorization': localStorage.accessToken
-          },
-          'userId': id,
-          'storyId': storyId
-        })
+      this.users.forEach(function (user) {
+        if (user.id < 0) {
+          request.post(process.env.API_LOCATION + '/beta_readers/', {
+            header: {
+              'Authorization': localStorage.accessToken
+            },
+            'userId': user.userId,
+            'storyId': storyId
+          })
+            .then(res => {
+              user.id = res.data.id
+            })
+        }
       })
     }
   }

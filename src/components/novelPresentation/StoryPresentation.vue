@@ -14,6 +14,10 @@
       <p class="presentationElement"><strong>Last update date : </strong>{{update_date}}</p>
       <p class="presentationElement" style="margin-bottom: 7%;"><strong>Synopsis : </strong>{{story.synopsis}}</p>
 
+      <div v-if='betaReadersTemplate'>
+        <beta-reader></beta-reader>
+      </div>
+
       <div id="chapters" v-for="chapter in story.storyChapters" :key="chapter.id" style="margin-bottom: 1%">
         <router-link :to="{ name: 'read', params: { id: chapter.id } }" v-if="chapter.online" tag="h3">
           {{chapter.number}}. {{chapter.title}}
@@ -21,25 +25,33 @@
         <h3 v-else>{{chapter.title}}</h3>
       </div>
     </div>
+    <v-btn
+      style="float: right"
+      @click="searchBetaReaders"
+    >
+      Add beta Readers
+    </v-btn>
   </div>
 </template>
 
 <script>
+import BetaReader from '../betaReaders/BetaReader'
 import moment from 'moment'
 import FavoriteHandler from '../novelManipulation/FavoriteHandler'
 
 export default {
   name: 'StoryPresentation',
-  components: {FavoriteHandler},
+  components: {BetaReader, FavoriteHandler},
   data () {
     return {
       story: {},
       maxChapter: 0,
       storyKind: '',
-      favoriteId: 0,
       authorUsername: '',
       publication_date: '',
-      update_date: ''
+      update_date: '',
+      favoriteId: 0,
+      betaReadersTemplate: false
     }
   },
   created () {
@@ -62,7 +74,6 @@ export default {
       }
     })
       .then(response => {
-        console.log(response)
         let story = response.data.story
         story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
         this.story = story
@@ -82,6 +93,33 @@ export default {
       })
       .catch(error => console.log(error))
       .finally(() => { this.$store.state.loader = false })
+  },
+  methods: {
+    addFavorite () {
+      let id = this.$route.params.id
+      this.$http.post(process.env.API_LOCATION + '/stories/' + id + '/favorites', {
+        headers: {
+          'X-Access-Token': localStorage.accessToken
+        },
+        'userId': localStorage.userId,
+        'storyId': id
+      })
+        .then(res => { this.favoriteId = res.data.id })
+    },
+    deleteFavorite () {
+      let id = this.$route.params.id
+      this.$http.delete(process.env.API_LOCATION + '/favorites/' + this.favoriteId, {
+        headers: {
+          'X-Access-Token': localStorage.accessToken
+        },
+        'userId': localStorage.userId,
+        'storyId': id
+      })
+      this.favoriteId = undefined
+    },
+    searchBetaReaders () {
+      this.betaReadersTemplate = !this.betaReadersTemplate
+    }
   }
 }
 </script>

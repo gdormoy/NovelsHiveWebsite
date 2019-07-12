@@ -30,12 +30,6 @@
         show-save-status
         :initial-text="editorText"
         :saving="saving" />
-      <v-btn
-        style="float: right"
-        @click="addBetaReaders"
-      >
-        Add beta lecteur
-      </v-btn>
       <div>
       </div>
     </div>
@@ -235,9 +229,6 @@ export default {
         this.chapterId = response.data.id
       })
         .catch(error => console.log(error))
-    },
-    addBetaReaders () {
-      this.$router.push(/beta-reader/ + this.storyId)
     }
   }
 }
