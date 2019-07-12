@@ -6,6 +6,8 @@
         <favorite-handler style="float: right;" :favorite-id="favoriteId" :story-id="parseInt(this.$route.params.id)"></favorite-handler>
       </h1>
       <img :src="panel" alt="" id="panel">
+
+      <v-icon>local_offer</v-icon>
       <div class="presentationElement" v-for="tag in story.tags" :key="tag" style="display: inline-block;">
         <v-chip>{{ tag }}</v-chip>
       </div>
