@@ -5,7 +5,7 @@
         <span style="text-decoration: underline">{{story.title}}</span>
         <favorite-handler style="float: right;" :favorite-id="favoriteId" :story-id="parseInt(this.$route.params.id)"></favorite-handler>
       </h1>
-      <img :src="panel" alt="">
+      <img :src="panel" alt="" id="panel">
       <div class="presentationElement" v-for="tag in story.tags" :key="tag" style="display: inline-block;">
         <v-chip>{{ tag }}</v-chip>
       </div>
@@ -112,5 +112,12 @@ export default {
 
   .presentationElement {
     margin-top: 3%;
+  }
+
+  #panel {
+    max-width: 600px;
+    max-height: 800px;
+    display: block;
+    margin: auto;
   }
 </style>
