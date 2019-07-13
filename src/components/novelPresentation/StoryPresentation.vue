@@ -25,12 +25,14 @@
         <h3 v-else>{{chapter.title}}</h3>
       </div>
     </div>
-    <v-btn
-      style="float: right"
-      @click="searchBetaReaders"
-    >
-      Add beta Readers
-    </v-btn>
+    <div v-if='canAddBetaReaders'>
+      <v-btn
+        style="float: right"
+        @click="searchBetaReaders"
+      >
+        Add beta Readers
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -51,6 +53,7 @@ export default {
       publication_date: '',
       update_date: '',
       favoriteId: 0,
+      canAddBetaReaders: false,
       betaReadersTemplate: false
     }
   },
@@ -77,6 +80,9 @@ export default {
         let story = response.data.story
         story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
         this.story = story
+        if (story.userId === parseInt(localStorage.userId)) {
+          this.canAddBetaReaders = true
+        }
         this.authorUsername = story.user.username
 
         this.maxChapter = this.story.storyChapters.length

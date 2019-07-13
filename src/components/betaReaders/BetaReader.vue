@@ -84,10 +84,6 @@ export default {
         this.usersId = readersId
         this.users = readers
       })
-    this.searchParamsChanged()
-  },
-  updated () {
-    this.searchParamsChanged()
   },
   methods: {
     searchParamsChanged () {
@@ -145,8 +141,9 @@ export default {
     getUserNameForSearch () {
       let result = '%'
       Array.from(this.userName).forEach(char => {
-        result += char + '%'
+        result += char
       })
+      result += '%'
 
       return result
     },
@@ -167,16 +164,12 @@ export default {
       let idIndex = this.usersId.indexOf(user.userId)
       this.usersId.splice(idIndex, 1)
       this.users.splice(index, 1)
-      console.log(user.id)
       if (user.id >= 0) {
         this.$http.delete(process.env.API_LOCATION + '/beta_readers/' + user.id, {
           headers: {
             'Authorization': localStorage.accessToken
           }
         })
-          .then(res => {
-            console.log(res)
-          })
       }
     },
     addBetaReaders () {
