@@ -145,6 +145,10 @@ export default {
         requestBody.storyTags = this.tags
       }
 
+      if (this.betaReaders !== null && this.betaReaders !== undefined) {
+        requestBody.betaReaders = this.betaReaders
+      }
+
       this.$http.post(process.env.API_LOCATION + '/stories', requestBody)
         .then(response => this.createSuccessful(response))
         .catch(error => this.createFailed(error))
@@ -164,7 +168,8 @@ export default {
       }
     },
     createSuccessful (response) {
-      this.$router.push('/') // Where to redirect ?
+      // this.$router.push('/') // Where to redirect ?
+      console.log('success ', new Date())
     },
     getKindIdByName () {
       this.kindsObject.forEach((kind) => {
