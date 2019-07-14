@@ -93,9 +93,7 @@ export default {
       })
     },
     searchParamsChanged () {
-      console.log('searchParamsChanged')
       this.getUsers().then(response => {
-        console.log(response)
         this.getBetaReadersUsersCandidates(response.data)
       })
     },
@@ -122,7 +120,6 @@ export default {
       this.betaReaders.splice(this.betaReaders.indexOf(betaReader), 1)
 
       this.$http.delete(process.env.API_LOCATION + /beta_readers/ + betaReader.id)
-        .then(response => console.log(response))
         .catch(error => console.log(error))
     }
   }
