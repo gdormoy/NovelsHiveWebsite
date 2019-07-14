@@ -66,16 +66,15 @@
         :rules="synopsisRules"></v-textarea>
 
       <beta-reader
-      @beta-readers-changed="updateBetaReader"></beta-reader>
+      @beta-readers-changed="updateBetaReader"
+      style="margin-bottom: 3%;"></beta-reader>
 
       <v-btn
         color="success"
         :disabled="!formIsValid"
         @click="createStory"
         >Create</v-btn>
-
     </v-form>
-    <!--<editor />-->
   </div>
 </template>
 

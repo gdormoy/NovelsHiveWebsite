@@ -6,10 +6,12 @@
         :search-input.sync="searchValue"
         label="Beta readers"
       ></v-autocomplete>
+      <h3>Beta readers of my novel</h3>
       <div
         v-for='user in betaReaders'
         :key='user.username'
         @click='deleteUser(user)'
+        style="margin-bottom: 1%;"
         >
         {{user.username}}
       </div>
