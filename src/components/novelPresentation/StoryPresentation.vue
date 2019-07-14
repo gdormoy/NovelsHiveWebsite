@@ -36,10 +36,12 @@ export default {
       story: {},
       maxChapter: 0,
       storyKind: '',
-      favoriteId: 0,
       authorUsername: '',
       publication_date: '',
-      update_date: ''
+      update_date: '',
+      favoriteId: 0,
+      canAddBetaReaders: false,
+      betaReadersTemplate: false
     }
   },
   created () {
@@ -62,10 +64,12 @@ export default {
       }
     })
       .then(response => {
-        console.log(response)
         let story = response.data.story
         story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
         this.story = story
+        if (story.userId === parseInt(localStorage.userId)) {
+          this.canAddBetaReaders = true
+        }
         this.authorUsername = story.user.username
 
         this.maxChapter = this.story.storyChapters.length
@@ -82,6 +86,30 @@ export default {
       })
       .catch(error => console.log(error))
       .finally(() => { this.$store.state.loader = false })
+  },
+  methods: {
+    addFavorite () {
+      let id = this.$route.params.id
+      this.$http.post(process.env.API_LOCATION + '/stories/' + id + '/favorites', {
+        headers: {
+          'X-Access-Token': localStorage.accessToken
+        },
+        'userId': localStorage.userId,
+        'storyId': id
+      })
+        .then(res => { this.favoriteId = res.data.id })
+    },
+    deleteFavorite () {
+      let id = this.$route.params.id
+      this.$http.delete(process.env.API_LOCATION + '/favorites/' + this.favoriteId, {
+        headers: {
+          'X-Access-Token': localStorage.accessToken
+        },
+        'userId': localStorage.userId,
+        'storyId': id
+      })
+      this.favoriteId = undefined
+    }
   }
 }
 </script>

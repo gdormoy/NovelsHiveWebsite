@@ -65,21 +65,24 @@
         required
         :rules="synopsisRules"></v-textarea>
 
+      <beta-reader
+      @beta-readers-changed="updateBetaReader"
+      style="margin-bottom: 3%;"></beta-reader>
+
       <v-btn
         color="success"
         :disabled="!formIsValid"
         @click="createStory"
         >Create</v-btn>
-
     </v-form>
-    <!--<editor />-->
   </div>
 </template>
 
 <script>
 import TagCombobox from '../utils/tagCombobox'
+import BetaReader from '../betaReaders/BetaReader'
 export default {
-  components: {TagCombobox},
+  components: {BetaReader, TagCombobox},
   data () {
     return {
       formIsValid: false,
@@ -103,7 +106,8 @@ export default {
       kindId: 0,
       tags: [],
       tagsProposal: [],
-      tagValue: ''
+      tagValue: '',
+      betaReaders: []
     }
   },
   created () {
@@ -140,6 +144,10 @@ export default {
         requestBody.storyTags = this.tags
       }
 
+      if (this.betaReaders !== null && this.betaReaders !== undefined) {
+        requestBody.betaReaders = this.betaReaders
+      }
+
       this.$http.post(process.env.API_LOCATION + '/stories', requestBody)
         .then(response => this.createSuccessful(response))
         .catch(error => this.createFailed(error))
@@ -159,7 +167,8 @@ export default {
       }
     },
     createSuccessful (response) {
-      this.$router.push('/') // Where to redirect ?
+      // this.$router.push('/') // Where to redirect ?
+      console.log('success ', new Date())
     },
     getKindIdByName () {
       this.kindsObject.forEach((kind) => {
@@ -175,6 +184,9 @@ export default {
     },
     updateTags (tags) {
       this.tags = tags
+    },
+    updateBetaReader (betaReaders) {
+      this.betaReaders = betaReaders
     }
   },
   watch: {

@@ -5,6 +5,9 @@
     <h2>Drafts</h2>
     <chapter-icon-list :chapters="draftChapters"></chapter-icon-list>
 
+    <h2>Beta</h2>
+    <chapter-icon-list :chapters="betaChapters"></chapter-icon-list>
+
     <h2>Completed</h2>
     <div v-for="story in completedChapters" :key="story.storyName">
       <chapter-icon-list :chapters="story.chapters" :story-name="story.storyName"></chapter-icon-list>
@@ -65,6 +68,7 @@ export default {
       draftChapters: [],
       completedChapters: [],
       tempCompletedChapters: [],
+      betaChapters: [],
       fab: false
     }
   },
@@ -94,6 +98,45 @@ export default {
             this.$data.completedChapters.push(this.$data.tempCompletedChapters)
           }
         }, this)
+      })
+
+    this.$http.get(process.env.API_LOCATION + '/stories', {
+      headers: {
+        'Authorization': localStorage.accessToken
+      },
+      params: {
+        'filter': {
+          'include': [{
+            'relation': 'betaReaders',
+            'scope': {
+              'where': {
+                'userId': localStorage.userId
+              }
+            }
+          },
+          {
+            'relation': 'storyChapters',
+            'scope': {
+              'where': {
+                'online': false
+              }
+            }
+          }
+          ]
+        }
+      }
+    })
+      .then(res => {
+        let stories = res.data
+        let chapters = []
+        stories.forEach(function (story) {
+          if (story.betaReaders.length > 0) {
+            story.storyChapters.forEach(function (chapter) {
+              chapters.push(chapter)
+            })
+          }
+        })
+        this.betaChapters = chapters
       })
       .finally(() => {
         this.$store.state.loader = false
