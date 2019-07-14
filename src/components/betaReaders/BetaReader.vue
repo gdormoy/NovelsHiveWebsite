@@ -12,7 +12,7 @@
       </div>
       <v-list>
         <v-list-tile
-          v-for='user in usersTab'
+          v-for='user in userList'
           :key='user.username'
           @click='addUser(user)'
         >
@@ -22,12 +22,12 @@
         </v-list-tile>
       </v-list>
       <v-tab
-        v-for='user in users'
+        v-for='user in betaReaders'
         :key='user.username'
         @click='deleteUser(user)'
         style="font-size: 1.5em"
         >
-        {{user.username}}
+        {{user.user.username}}
       </v-tab>
       <v-btn fab dark color="indigo"
         style="float: right"
@@ -46,44 +46,49 @@ export default {
     userName: '',
     usersTab: [],
     usersId: [],
-    users: []
+    users: [],
+    userList: [],
+    betaReaders: []
   }),
   created () {
     this.storyId = this.$route.params.id
 
-    let requestParam = {
+    let promises = []
+
+    promises.push(this.$http.get(process.env.API_LOCATION + '/stories/' + this.storyId + '/betaReaders', {
       headers: {
         'Authorization': localStorage.accessToken
-      }
-    }
-
-    let filterParam = {
+      },
       params: {
         'filter': {
           'include': 'user'
         }
       }
-    }
+    }))
 
-    Object.assign(requestParam, filterParam)
+    promises.push(this.$http.get(process.env.API_LOCATION + '/users', {
+      headers: {
+        'Authorization': localStorage.accessToken
+      }
+    }))
 
-    this.$http.get(process.env.API_LOCATION + '/stories/' + this.storyId + '/betaReaders', requestParam)
-      .then(res => {
-        let data = res.data
-        let readers = []
-        let readersId = []
-        data.forEach(function (reader) {
-          let user = {
-            id: reader.id,
-            userId: reader.user.id,
-            username: reader.user.username
+    Promise.all(promises).then(values => {
+      console.log(values)
+      this.betaReaders = values[0].data
+      let betaReaders = this.betaReaders.map(betaReader => betaReader.user)
+
+      this.userList = values[1].data.filter(user => {
+        if (user.id === parseInt(localStorage.userId)) return false
+
+        for (let i = 0; i < betaReaders.length; i++) {
+          if (betaReaders[i].id === user.id) {
+            console.log('exists')
+            return false
           }
-          readers.push(user)
-          readersId.push(reader.user.id)
-        })
-        this.usersId = readersId
-        this.users = readers
+        }
+        return true
       })
+    })
   },
   methods: {
     searchParamsChanged () {
@@ -148,29 +153,33 @@ export default {
       return result
     },
     addUser (user) {
-      let index = this.usersTab.indexOf(user)
-      console.log(index)
-      let element = {
-        id: -1,
-        userId: user.id,
-        username: user.username
-      }
-      this.users.push(element)
-      this.usersId.push(user.id)
-      this.usersTab.splice(index, 1)
+      this.userList.splice(this.userList.indexOf(user), 1)
+
+      this.$http.post(process.env.API_LOCATION + '/beta_readers', {
+        'userId': user.id,
+        'storyId': this.storyId
+      }).then(response => this.betaReaders.push(response.data))
+        .catch(error => console.log(error))
     },
-    deleteUser (user) {
-      let index = this.users.indexOf(user)
-      let idIndex = this.usersId.indexOf(user.userId)
-      this.usersId.splice(idIndex, 1)
-      this.users.splice(index, 1)
-      if (user.id >= 0) {
-        this.$http.delete(process.env.API_LOCATION + '/beta_readers/' + user.id, {
-          headers: {
-            'Authorization': localStorage.accessToken
-          }
-        })
-      }
+    deleteUser (betaReader) {
+      this.userList.push(betaReader.user)
+      this.betaReaders.splice(this.betaReaders.indexOf(betaReader), 1)
+
+      this.$http.delete(process.env.API_LOCATION + /beta_readers/ + betaReader.id)
+        .then(response => console.log(response))
+        .catch(error => console.log(error))
+
+      // let index = this.users.indexOf(user)
+      // let idIndex = this.usersId.indexOf(user.userId)
+      // this.usersId.splice(idIndex, 1)
+      // this.users.splice(index, 1)
+      // if (user.id >= 0) {
+      //   this.$http.delete(process.env.API_LOCATION + '/beta_readers/' + user.id, {
+      //     headers: {
+      //       'Authorization': localStorage.accessToken
+      //     }
+      //   })
+      // }
     },
     addBetaReaders () {
       let storyId = this.storyId
