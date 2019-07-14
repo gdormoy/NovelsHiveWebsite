@@ -65,7 +65,8 @@
         required
         :rules="synopsisRules"></v-textarea>
 
-      <beta-reader></beta-reader>
+      <beta-reader
+      @beta-readers-changed="updateBetaReader"></beta-reader>
 
       <v-btn
         color="success"
@@ -106,7 +107,8 @@ export default {
       kindId: 0,
       tags: [],
       tagsProposal: [],
-      tagValue: ''
+      tagValue: '',
+      betaReaders: []
     }
   },
   created () {
@@ -178,6 +180,9 @@ export default {
     },
     updateTags (tags) {
       this.tags = tags
+    },
+    updateBetaReader (betaReaders) {
+      this.betaReaders = betaReaders
     }
   },
   watch: {

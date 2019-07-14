@@ -34,8 +34,6 @@ export default {
     deleteUser (betaReader) {
       this.userList.push(betaReader)
       this.betaReaders.splice(this.betaReaders.indexOf(betaReader), 1)
-
-      console.log('delete : ', betaReader, ' - ', this.betaReaders)
     },
     getUserByName (name) {
       for (let i = 0; i < this.userList.length; i++) {
@@ -57,8 +55,9 @@ export default {
       let user = this.getUserByName(val)
       this.betaReaders.push(user)
       this.userList.splice(this.userList.indexOf(user), 1)
-
-      console.log('Update username : ', this.betaReaders)
+    },
+    betaReaders () {
+      this.$emit('beta-readers-changed', this.betaReaders)
     },
     searchValue (val) {
       val = val === null ? '' : val
