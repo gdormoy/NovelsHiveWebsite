@@ -1,34 +1,18 @@
 <template>
     <div>
-      <h1>Beta Readers</h1>
-      <div>
-        <v-text-field
-          v-model="username"
-          placeholder="Users"
-          prepend-inner-icon="search"
-          clearable
-          @input="searchParamsChanged"
-        ></v-text-field>
-      </div>
-      <v-list>
-        <v-list-tile
-          v-for='user in userList'
-          :key='user.username'
-          @click='addUser(user)'
-        >
-          <v-list-tile-content>
-            <v-list-tile-title v-text="user.username"></v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-      <v-tab
+      <v-autocomplete
+        v-model="username"
+        :items="items"
+        :search-input.sync="searchValue"
+        label="Beta readers"
+      ></v-autocomplete>
+      <div
         v-for='user in betaReaders'
         :key='user.username'
         @click='deleteUser(user)'
-        style="font-size: 1.5em"
         >
-        {{user.user.username}}
-      </v-tab>
+        {{user.username}}
+      </div>
     </div>
 </template>
 
@@ -40,30 +24,47 @@ export default {
     username: '',
     userList: [],
     searchMatchingUsers: [],
-    betaReaders: []
+    betaReaders: [],
+    searchValue: ''
   }),
-  created () {
-    this.storyId = this.$route.params.id
-
-    let promises = [
-      this.$http.get(process.env.API_LOCATION + '/stories/' + this.storyId + '/betaReaders', {
-        params: {
-          'filter': {
-            'include': 'user'
-          }
-        }
-      }),
-      this.getUsers()
-    ]
-
-    Promise.all(promises).then(values => {
-      this.betaReaders = values[0].data
-      this.getBetaReadersUsersCandidates(values[1].data)
-    })
-  },
   methods: {
-    getUsers () {
-      return this.$http.get(process.env.API_LOCATION + '/users', {
+    getUserNameForSearch (value) {
+      return '%' + value + '%'
+    },
+    deleteUser (betaReader) {
+      this.userList.push(betaReader)
+      this.betaReaders.splice(this.betaReaders.indexOf(betaReader), 1)
+
+      console.log('delete : ', betaReader, ' - ', this.betaReaders)
+    },
+    getUserByName (name) {
+      for (let i = 0; i < this.userList.length; i++) {
+        if (this.userList[i].username === name) {
+          return this.userList[i]
+        }
+      }
+    }
+  },
+  computed: {
+    items () {
+      return this.userList.map(user => user.username)
+    }
+  },
+  watch: {
+    username (val) {
+      if (val === '' || val === undefined) return
+
+      let user = this.getUserByName(val)
+      this.betaReaders.push(user)
+      this.userList.splice(this.userList.indexOf(user), 1)
+
+      console.log('Update username : ', this.betaReaders)
+    },
+    searchValue (val) {
+      val = val === null ? '' : val
+      let filter = val.trim()
+
+      this.$http.get(process.env.API_LOCATION + '/users', {
         headers: {
           'Authorization': localStorage.accessToken
         },
@@ -71,56 +72,25 @@ export default {
           filter: {
             where: {
               username: {
-                like: this.getUserNameForSearch()
+                like: this.getUserNameForSearch(filter)
               }
             }
           }
         }
-      })
-    },
-    getBetaReadersUsersCandidates (allUsers) {
-      let betaReaders = this.betaReaders.map(betaReader => betaReader.user)
+      }).then(response => {
+        let betaReaders = this.betaReaders
 
-      this.userList = allUsers.filter(user => {
-        if (user.id === parseInt(localStorage.userId)) return false
+        this.userList = response.data.filter(user => {
+          if (user.id === parseInt(localStorage.userId)) return false
 
-        for (let i = 0; i < betaReaders.length; i++) {
-          if (betaReaders[i].id === user.id) {
-            return false
+          for (let i = 0; i < betaReaders.length; i++) {
+            if (betaReaders[i].id === user.id) {
+              return false
+            }
           }
-        }
-        return true
+          return true
+        })
       })
-    },
-    searchParamsChanged () {
-      this.getUsers().then(response => {
-        this.getBetaReadersUsersCandidates(response.data)
-      })
-    },
-    getUserNameForSearch () {
-      let result = '%'
-      Array.from(this.username).forEach(char => {
-        result += char
-      })
-      result += '%'
-
-      return result
-    },
-    addUser (user) {
-      this.userList.splice(this.userList.indexOf(user), 1)
-
-      this.$http.post(process.env.API_LOCATION + '/beta_readers', {
-        'userId': user.id,
-        'storyId': this.storyId
-      }).then(response => this.betaReaders.push(response.data))
-        .catch(error => console.log(error))
-    },
-    deleteUser (betaReader) {
-      this.userList.push(betaReader.user)
-      this.betaReaders.splice(this.betaReaders.indexOf(betaReader), 1)
-
-      this.$http.delete(process.env.API_LOCATION + /beta_readers/ + betaReader.id)
-        .catch(error => console.log(error))
     }
   }
 }
