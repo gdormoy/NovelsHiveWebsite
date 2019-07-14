@@ -65,6 +65,8 @@
         required
         :rules="synopsisRules"></v-textarea>
 
+      <beta-reader></beta-reader>
+
       <v-btn
         color="success"
         :disabled="!formIsValid"
@@ -78,8 +80,9 @@
 
 <script>
 import TagCombobox from '../utils/tagCombobox'
+import BetaReader from '../betaReaders/BetaReader'
 export default {
-  components: {TagCombobox},
+  components: {BetaReader, TagCombobox},
   data () {
     return {
       formIsValid: false,
