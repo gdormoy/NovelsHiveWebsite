@@ -82,7 +82,17 @@ export default {
           let storyName = story.title
           this.$data.tempCompletedChapters = {'storyName': storyName, chapters: []}
 
+          story.panel = JSON.parse(story.panel)
+          if (story.panel !== null && story.panel !== undefined) {
+            let image = story.panel
+            let mimeType = image.mimeType
+            let base64Image = Buffer.from(image.content).toString('base64')
+            story.panel = 'data:' + mimeType + ';base64,' + base64Image
+          }
+
           story.storyChapters.forEach(function (chapter) {
+            chapter.panel = story.panel
+
             if (chapter.online) {
               this.tempCompletedChapters.chapters.push(chapter)
             } else {
