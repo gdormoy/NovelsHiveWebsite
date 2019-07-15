@@ -5,9 +5,8 @@
           slot-scope="{ hover }"
           max-width="150px"
         >
-          <v-img
-            src="../../static/book_img.png"
-          >
+          <v-img :src="urlImage" alt="Chapter image">
+
             <v-expand-transition>
               <div
                 v-if="hover"
@@ -28,9 +27,22 @@
 export default {
   props: ['chapter'],
   name: 'ChapterIcon',
+  data () {
+    return {
+      urlImage: ''
+    }
+  },
   methods: {
     gotoReading (chapterId) {
       this.$router.push('/read/' + chapterId)
+    }
+  },
+  created () {
+    console.log(this.chapter)
+    if (this.chapter.panel === null || this.chapter.panel === undefined) {
+      this.urlImage = '../../static/book_img.png'
+    } else {
+      this.urlImage = this.chapter.panel
     }
   }
 }

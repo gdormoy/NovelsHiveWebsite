@@ -5,6 +5,9 @@
         <span style="text-decoration: underline">{{story.title}}</span>
         <favorite-handler style="float: right;" :favorite-id="favoriteId" :story-id="parseInt(this.$route.params.id)"></favorite-handler>
       </h1>
+      <img :src="panel" alt="" id="panel">
+
+      <v-icon>local_offer</v-icon>
       <div class="presentationElement" v-for="tag in story.tags" :key="tag" style="display: inline-block;">
         <v-chip>{{ tag }}</v-chip>
       </div>
@@ -39,7 +42,7 @@ export default {
       authorUsername: '',
       publication_date: '',
       update_date: '',
-      favoriteId: 0,
+      panel: undefined,
       canAddBetaReaders: false,
       betaReadersTemplate: false
     }
@@ -83,6 +86,22 @@ export default {
 
         this.story.tags = this.story.storyHasStoryTags.map(tagLink => tagLink.storyTag.name)
         delete this.story.storyHasStoryTags
+
+        if (story.panel !== null) {
+          let url = process.env.API_LOCATION + 'storage/images/storyImage/' + story.panel
+          console.log(url)
+
+          this.$http.get(process.env.API_LOCATION + '/containers/storyImage/files/' + story.panel + '/read')
+            .then(response => {
+              console.log(response)
+              let mimeType = response.data.result.mimeType
+              let base64Image = Buffer.from(response.data.result.content).toString('base64')
+              console.log(base64Image)
+              let imageUrl = 'data:' + mimeType + ';base64,' + base64Image
+
+              this.panel = imageUrl
+            })
+        }
       })
       .catch(error => console.log(error))
       .finally(() => { this.$store.state.loader = false })
@@ -122,5 +141,12 @@ export default {
 
   .presentationElement {
     margin-top: 3%;
+  }
+
+  #panel {
+    max-width: 600px;
+    max-height: 800px;
+    display: block;
+    margin: auto;
   }
 </style>

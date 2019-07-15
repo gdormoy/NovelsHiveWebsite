@@ -33,28 +33,6 @@
         @change="getKindIdByName"
         attach></v-select>
 
-<!--      <template>-->
-<!--        <v-combobox-->
-<!--          v-model="tags"-->
-<!--          :items="tagsProposal"-->
-<!--          :search-input.sync="tagValue"-->
-<!--          label="Tags"-->
-<!--          chips-->
-<!--          clearable-->
-<!--          multiple-->
-<!--        >-->
-<!--          <template v-slot:selection="data">-->
-<!--            <v-chip-->
-<!--              :selected="data.selected"-->
-<!--              close-->
-<!--              @input="removeTag(data.item)"-->
-<!--            >-->
-<!--              {{ data.item }}-->
-<!--            </v-chip>-->
-<!--          </template>-->
-<!--        </v-combobox>-->
-<!--      </template>-->
-
       <tag-combobox
       @tags-changed="updateTags"></tag-combobox>
 
@@ -69,6 +47,18 @@
       @beta-readers-changed="updateBetaReader"
       style="margin-bottom: 3%;"></beta-reader>
 
+      <div id="pictureInputContainer">
+        <vue-picture-input
+          ref="pictureInput"
+          accept="image/jpg, image/jpeg, image/png"
+          removable
+          :crop="false"
+          remove-button-class="v-btn error"
+          button-class="v-btn"
+          label="Panel (Optional)"
+        ></vue-picture-input>
+      </div>
+
       <v-btn
         color="success"
         :disabled="!formIsValid"
@@ -80,9 +70,12 @@
 
 <script>
 import TagCombobox from '../utils/tagCombobox'
+import VuePictureInput from 'vue-picture-input'
+import FormDataUpload from '../../scripts/formDataUpload'
 import BetaReader from '../betaReaders/BetaReader'
+
 export default {
-  components: {BetaReader, TagCombobox},
+  components: {TagCombobox, VuePictureInput, BetaReader},
   data () {
     return {
       formIsValid: false,
@@ -113,7 +106,6 @@ export default {
   created () {
     this.$http.get(process.env.API_LOCATION + '/kinds')
       .then((response) => {
-        console.log(response)
         this.kindsObject = response.data
 
         response.data.forEach((kind) => {
@@ -129,6 +121,16 @@ export default {
         this.formIsValid = false
       }
 
+      if (this.$refs.pictureInput.file) {
+        FormDataUpload(process.env.API_LOCATION + '/containers/storyImage/upload', this.$refs.pictureInput.file, 'file')
+          .then(response => {
+            this.storyCreation(response.data.result.files.file[0].name)
+          })
+      } else {
+        this.storyCreation()
+      }
+    },
+    storyCreation (filename) {
       let now = Date.now()
 
       let requestBody = {
@@ -138,6 +140,10 @@ export default {
         'update_date': now,
         'userId': localStorage.userId,
         'storyKindId': this.kindId
+      }
+
+      if (filename !== undefined) {
+        requestBody.panel = filename
       }
 
       if (this.tags !== null && this.tags !== undefined) {
@@ -173,7 +179,6 @@ export default {
     getKindIdByName () {
       this.kindsObject.forEach((kind) => {
         if (kind.name === this.kind) {
-          console.log(kind.id)
           this.kindId = kind.id
         }
       })
@@ -191,7 +196,6 @@ export default {
   },
   watch: {
     tagValue () {
-      console.log(this.tagValue)
       let tag = this.tagValue
 
       if (tag === null || tag === undefined) return
@@ -224,5 +228,31 @@ export default {
 </script>
 
 <style scoped>
+  #pictureInputContainer {
+    max-width: 30%;
+    max-height: 30%;
+    margin: auto;
+  }
 
+  .containerOfContainer {
+    max-width: 30%;
+    margin: auto;
+  }
+
+  .container {
+    background-color: red;
+    position: relative;
+    padding-top: 75%; /* 4:3 Aspect Ratio */
+  }
+
+  .text {
+    position:  absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    text-align: center;
+    font-size: 20px;
+    color: white;
+  }
 </style>
