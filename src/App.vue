@@ -41,7 +41,6 @@ export default {
 
   blockquote
   {
-    font-style: normal;
     font-size: 16px;
     margin-left: 32px;
     font-family: Consolas, "Times New Roman", Verdana, serif;

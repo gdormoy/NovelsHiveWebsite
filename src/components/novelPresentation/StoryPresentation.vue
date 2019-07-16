@@ -17,12 +17,7 @@
       <p class="presentationElement"><strong>Last update date : </strong>{{update_date}}</p>
       <p class="presentationElement" style="margin-bottom: 7%;"><strong>Synopsis : </strong>{{story.synopsis}}</p>
 
-      <div id="chapters" v-for="chapter in story.storyChapters" :key="chapter.id" style="margin-bottom: 1%">
-        <router-link :to="{ name: 'read', params: { id: chapter.id } }" v-if="chapter.online" tag="h3">
-          {{chapter.number}}. {{chapter.title}}
-        </router-link>
-        <h3 v-else>{{chapter.title}}</h3>
-      </div>
+      <chapter-summary :chapters="story.storyChapters"></chapter-summary>
     </div>
   </div>
 </template>
@@ -30,10 +25,11 @@
 <script>
 import moment from 'moment'
 import FavoriteHandler from '../novelManipulation/FavoriteHandler'
+import ChapterSummary from './chapterSummary'
 
 export default {
   name: 'StoryPresentation',
-  components: {FavoriteHandler},
+  components: {FavoriteHandler, ChapterSummary},
   data () {
     return {
       story: {},
@@ -134,11 +130,6 @@ export default {
 </script>
 
 <style scoped>
-  #chapters:hover {
-    cursor: pointer;
-    color: grey;
-  }
-
   .presentationElement {
     margin-top: 3%;
   }

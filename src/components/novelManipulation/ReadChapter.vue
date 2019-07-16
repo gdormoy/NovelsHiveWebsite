@@ -11,6 +11,8 @@
       style="margin-bottom: 13%;"
     ></chapter-navigation>
 
+    <chapter-summary :chapters="storyChapters"></chapter-summary>
+
     <div style="text-align: left;">
       <h2>{{chapterTitle}}</h2>
       <div v-html="chapterData"></div>
@@ -29,10 +31,11 @@
 import ChapterNavigation from '../novelPresentation/ChapterNavigation'
 import ChapterCommentaries from '../commentaries/ChapterCommentaries'
 import FavoriteHandler from './FavoriteHandler'
+import ChapterSummary from '../novelPresentation/chapterSummary'
 
 export default {
   name: 'ReadChapter',
-  components: {FavoriteHandler, ChapterNavigation, ChapterCommentaries},
+  components: {ChapterSummary, FavoriteHandler, ChapterNavigation, ChapterCommentaries},
   data () {
     return {
       storyTitle: '',
@@ -42,7 +45,8 @@ export default {
       previousChapterId: null,
       nextChapterId: null,
       chapterId: 0,
-      favoriteId: 0
+      favoriteId: 0,
+      storyChapters: []
     }
   },
   created () {
@@ -80,6 +84,7 @@ export default {
       this.nextChapterId = response.data.chapter.nextChapter.id
       this.favoriteId = response.data.chapter.favoriteId
       this.storyId = response.data.chapter.storyId
+      this.storyChapters = response.data.chapter.storyChapters
     },
     getChapterFailed (error) {
       console.log(error)
