@@ -11,9 +11,11 @@
       style="margin-bottom: 13%;"
     ></chapter-navigation>
 
-    <chapter-summary :chapters="storyChapters"></chapter-summary>
+    <chapter-summary :chapters="storyChapters" v-if="showChapters"></chapter-summary>
 
     <div style="text-align: left;">
+      <v-checkbox v-model="showChapters" label="Show chapter summary"></v-checkbox>
+
       <h2>{{chapterTitle}}</h2>
       <div v-html="chapterData"></div>
     </div>
@@ -46,7 +48,8 @@ export default {
       nextChapterId: null,
       chapterId: 0,
       favoriteId: 0,
-      storyChapters: []
+      storyChapters: [],
+      showChapters: false
     }
   },
   created () {
