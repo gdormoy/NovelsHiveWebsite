@@ -47,6 +47,7 @@ export default {
       this.$http.get(process.env.API_LOCATION + '/chapters/' + this.$route.params.id + '/publishedCommentaries')
         .then(response => {
           let commentaries = response.data.commentaries
+          Moment.locale('fr')
 
           for (let counter = 0; counter < commentaries.length; ++counter) {
             commentaries[counter].text = Buffer.from(commentaries[counter].text).toString('utf-8')

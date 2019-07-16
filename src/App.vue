@@ -38,4 +38,14 @@ export default {
     color: #2c3e50;
     margin-top: 60px;
   }
+
+  blockquote
+  {
+    font-size: 16px;
+    margin-left: 32px;
+    font-family: Consolas, "Times New Roman", Verdana, serif;
+    border-left: 4px solid #CCC;
+    padding-left: 8px;
+    font-style: italic;
+  }
 </style>
