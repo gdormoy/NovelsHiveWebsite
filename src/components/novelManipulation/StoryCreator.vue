@@ -56,6 +56,7 @@
           remove-button-class="v-btn error"
           button-class="v-btn"
           label="Panel (Optional)"
+          z-index="0"
         ></vue-picture-input>
       </div>
 
