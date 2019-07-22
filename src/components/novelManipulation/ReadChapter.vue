@@ -2,7 +2,10 @@
   <div id="chapterReader">
     <h1 style="margin-bottom: 5%">
       {{storyTitle}}
-      <favorite-handler :story-id="storyId" :favorite-id="favoriteId" style="float: right;"></favorite-handler>
+      <div style="float: right;">
+        <v-icon large v-if="author" @click="goToChapterEdit">edit</v-icon>
+        <favorite-handler :story-id="storyId" :favorite-id="favoriteId" style="float: right;"></favorite-handler>
+      </div>
     </h1>
 
     <chapter-navigation
@@ -49,7 +52,8 @@ export default {
       chapterId: 0,
       favoriteId: 0,
       storyChapters: [],
-      showChapters: false
+      showChapters: false,
+      author: false
     }
   },
   created () {
@@ -88,6 +92,7 @@ export default {
       this.favoriteId = response.data.chapter.favoriteId
       this.storyId = response.data.chapter.storyId
       this.storyChapters = response.data.chapter.storyChapters
+      this.author = (response.data.chapter.author.toString() === localStorage.userId.toString())
     },
     getChapterFailed (error) {
       console.log(error)
@@ -95,6 +100,9 @@ export default {
     gotoChapter (chapterId) {
       console.log('Entering gotoChapter(' + chapterId + ')')
       this.$router.push('/read/' + chapterId.toString())
+    },
+    goToChapterEdit () {
+      this.$router.push('/write/' + this.chapterId.toString())
     }
   }
 }
