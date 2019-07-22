@@ -66,7 +66,6 @@ export default {
       serverDoesNotRespondErrorMessage: process.env.SERVER_DOES_NOT_RESPOND_ERROR_MESSAGE
     }
   },
-
   methods: {
     validate () {
       let requestBody = {
@@ -105,6 +104,9 @@ export default {
         this.loginErrorMessage = this.serverDoesNotRespondErrorMessage
       }
     }
+  },
+  created () {
+    console.log(process.env.API_LOCATION)
   }
 }
 </script>
