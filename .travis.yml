@@ -1,11 +1,9 @@
-image: ruby:latest
+language: node
 
-env:
-  global:
-  - secure: travisEncryptedHEROKU_KEY
-
-script:
-    - apt-get update -qy
-    - apt-get install -y ruby-dev
-    - gem install dpl
-    - dpl --provider=heroku --app=novelshive --api-key=$HEROKU_KEY
+deploy:
+  provider: heroku
+  api_key:
+    secure: travisEncryptedHEROKU_KEY
+  app: novelshive
+  on:
+    repo: gdormoy/NovelsHiveWebsite
