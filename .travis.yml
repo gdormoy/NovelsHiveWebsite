@@ -8,4 +8,4 @@ script:
     - apt-get update -qy
     - apt-get install -y ruby-dev
     - gem install dpl
-    - dpl --provider=heroku --app=tripadlowcost --api-key=$HEROKU_KEY
+    - dpl --provider=heroku --app=novelshive --api-key=$HEROKU_KEY
