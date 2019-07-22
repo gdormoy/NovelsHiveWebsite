@@ -78,8 +78,6 @@ export default {
         })
     },
     getChapterSuccessful (response) {
-      console.log(response)
-
       if (!response.data) {
         return this.getChapterFailed(null)
       }
@@ -98,7 +96,6 @@ export default {
       console.log(error)
     },
     gotoChapter (chapterId) {
-      console.log('Entering gotoChapter(' + chapterId + ')')
       this.$router.push('/read/' + chapterId.toString())
     },
     goToChapterEdit () {

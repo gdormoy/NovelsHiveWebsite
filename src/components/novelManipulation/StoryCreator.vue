@@ -174,8 +174,7 @@ export default {
       }
     },
     createSuccessful (response) {
-      // this.$router.push('/') // Where to redirect ?
-      console.log('success ', new Date())
+      this.$router.push('/') // Where to redirect ?
     },
     getKindIdByName () {
       this.kindsObject.forEach((kind) => {

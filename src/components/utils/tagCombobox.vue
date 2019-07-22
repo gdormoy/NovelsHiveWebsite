@@ -42,7 +42,6 @@ export default {
   },
   watch: {
     tagValue () {
-      console.log(this.tagValue)
       let tag = this.tagValue
 
       if (tag === null || tag === undefined) return

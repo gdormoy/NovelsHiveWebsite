@@ -133,10 +133,6 @@ export default {
         id: this.chapterId
       })
 
-      if (successHandler === undefined) {
-        successHandler = () => console.log('Chapter has been patched')
-      }
-
       if (failureHandler === undefined) {
         failureHandler = (error) => console.log(error)
       }

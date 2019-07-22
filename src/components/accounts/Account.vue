@@ -255,7 +255,6 @@ export default {
           'X-Access-Token': localStorage.accessToken
         }
       })
-        .then(response => (console.log(response)))
         .catch(error => (this.getUserFailed(error)))
     },
     deleteUser () {
@@ -264,7 +263,6 @@ export default {
           'X-Access-Token': localStorage.accessToken
         }
       })
-        .then(response => (console.log(response)))
       delete localStorage.accessToken
       this.$router.push('/login')
     }

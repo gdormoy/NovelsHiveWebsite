@@ -31,7 +31,6 @@ export default {
         'userId': localStorage.userId,
         'storyId': this.storyId
       })
-        .then(res => (console.log(res)))
       this.favoriteId = undefined
     }
   }

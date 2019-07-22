@@ -84,15 +84,10 @@ export default {
         delete this.story.storyHasStoryTags
 
         if (story.panel !== null) {
-          let url = process.env.API_LOCATION + 'storage/images/storyImage/' + story.panel
-          console.log(url)
-
           this.$http.get(process.env.API_LOCATION + '/containers/storyImage/files/' + story.panel + '/read')
             .then(response => {
-              console.log(response)
               let mimeType = response.data.result.mimeType
               let base64Image = Buffer.from(response.data.result.content).toString('base64')
-              console.log(base64Image)
               let imageUrl = 'data:' + mimeType + ';base64,' + base64Image
 
               this.panel = imageUrl
