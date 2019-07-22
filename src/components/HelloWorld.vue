@@ -92,9 +92,6 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
-  },
-  created () {
-    console.log(process.env.API_LOCATION)
   }
 }
 </script>

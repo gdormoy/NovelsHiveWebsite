@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '../components/HelloWorld'
 import Register from '../components/utils/Register'
 import Login from '../components/utils/Login'
 import ReadChapter from '../components/novelManipulation/ReadChapter'
@@ -21,8 +20,8 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld,
+      name: 'Home',
+      component: SearchStory,
       meta: { middleware: auth }
     },
     {
