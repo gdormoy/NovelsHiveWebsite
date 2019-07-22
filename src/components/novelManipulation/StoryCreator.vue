@@ -56,7 +56,7 @@
           remove-button-class="v-btn error"
           button-class="v-btn"
           label="Panel (Optional)"
-          z-index="0"
+          :z-index="0"
         ></vue-picture-input>
       </div>
 
@@ -174,8 +174,7 @@ export default {
       }
     },
     createSuccessful (response) {
-      // this.$router.push('/') // Where to redirect ?
-      console.log('success ', new Date())
+      this.$router.push('/') // Where to redirect ?
     },
     getKindIdByName () {
       this.kindsObject.forEach((kind) => {

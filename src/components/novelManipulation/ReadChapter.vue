@@ -2,7 +2,10 @@
   <div id="chapterReader">
     <h1 style="margin-bottom: 5%">
       {{storyTitle}}
-      <favorite-handler :story-id="storyId" :favorite-id="favoriteId" style="float: right;"></favorite-handler>
+      <div style="float: right;">
+        <v-icon large v-if="author" @click="goToChapterEdit">edit</v-icon>
+        <favorite-handler :story-id="storyId" :favorite-id="favoriteId" style="float: right;"></favorite-handler>
+      </div>
     </h1>
 
     <chapter-navigation
@@ -11,9 +14,11 @@
       style="margin-bottom: 13%;"
     ></chapter-navigation>
 
-    <chapter-summary :chapters="storyChapters"></chapter-summary>
+    <chapter-summary :chapters="storyChapters" v-if="showChapters"></chapter-summary>
 
     <div style="text-align: left;">
+      <v-checkbox v-model="showChapters" label="Show chapter summary"></v-checkbox>
+
       <h2>{{chapterTitle}}</h2>
       <div v-html="chapterData"></div>
     </div>
@@ -46,7 +51,9 @@ export default {
       nextChapterId: null,
       chapterId: 0,
       favoriteId: 0,
-      storyChapters: []
+      storyChapters: [],
+      showChapters: false,
+      author: false
     }
   },
   created () {
@@ -71,8 +78,6 @@ export default {
         })
     },
     getChapterSuccessful (response) {
-      console.log(response)
-
       if (!response.data) {
         return this.getChapterFailed(null)
       }
@@ -85,13 +90,16 @@ export default {
       this.favoriteId = response.data.chapter.favoriteId
       this.storyId = response.data.chapter.storyId
       this.storyChapters = response.data.chapter.storyChapters
+      this.author = (response.data.chapter.author.toString() === localStorage.userId.toString())
     },
     getChapterFailed (error) {
       console.log(error)
     },
     gotoChapter (chapterId) {
-      console.log('Entering gotoChapter(' + chapterId + ')')
       this.$router.push('/read/' + chapterId.toString())
+    },
+    goToChapterEdit () {
+      this.$router.push('/write/' + this.chapterId.toString())
     }
   }
 }

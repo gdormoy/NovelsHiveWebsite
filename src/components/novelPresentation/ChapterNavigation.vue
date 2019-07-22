@@ -24,7 +24,6 @@ export default {
   props: ['previousChapterId', 'nextChapterId'],
   methods: {
     gotoChapter (chapterId) {
-      console.log('Entering gotoChapter(' + chapterId + ')')
       this.$router.push('/read/' + chapterId.toString())
     }
   }

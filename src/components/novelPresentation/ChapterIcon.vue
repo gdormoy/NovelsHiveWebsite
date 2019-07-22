@@ -38,7 +38,6 @@ export default {
     }
   },
   created () {
-    console.log(this.chapter)
     if (this.chapter.panel === null || this.chapter.panel === undefined) {
       this.urlImage = '../../static/book_img.png'
     } else {

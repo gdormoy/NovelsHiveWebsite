@@ -75,8 +75,6 @@ export default {
   },
   created () {
     this.loadStories()
-    console.log(this.kindsObject)
-
     this.$http.get(process.env.API_LOCATION + '/kinds')
       .then((response) => {
         this.kinds.push(this.kindsObject[0].name)
@@ -151,7 +149,6 @@ export default {
 
       this.$http.get(process.env.API_LOCATION + '/stories', requestParam)
         .then(response => {
-          console.log(response)
           this.stories = []
           response.data.forEach((story) => {
             story.synopsis = Buffer.from(story.synopsis).toString('utf-8')
