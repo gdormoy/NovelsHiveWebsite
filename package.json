@@ -5,10 +5,11 @@
   "author": "Vincent Guénin <guenin.vincent4@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "start": "npm run dev",
-    "lint": "eslint --ext .js,.vue src",
-    "build": "node build/build.js"
+    "dev": "node build/dev-server.js",
+    "start": "node server.js",
+    "postinstall": "npm run build",
+    "build": "node build/build.js",
+    "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^12.1.0",
